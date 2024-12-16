@@ -22,9 +22,9 @@ local PROC_DATA = {
             alertStyle       = "TOP",  -- single texture above the player
         },
         {
-            buffName         = "Termporal Convergance",
+            buffName         = "Termporal Convergence",
             texture          = "Interface\\Icons\\Spell_Nature_Stormreach",
-            alertTexturePath = "Interface\\AddOns\\ProcDoc\\img\\MageTermporalConvergance.tga",
+            alertTexturePath = "Interface\\AddOns\\ProcDoc\\img\\MageTermporalConvergence.tga",
         },
     },
     ["DRUID"] = {
