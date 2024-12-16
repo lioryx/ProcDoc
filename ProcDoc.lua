@@ -23,7 +23,7 @@ local PROC_DATA = {
         },
         {
             buffName         = "Termporal Convergance",
-            texture          = "Interface\\Icons\\Spell_Nature_Stormreach",
+            texture          = "Interface\\Icons\\Spell_Nature_Stormreach.tga",
             alertTexturePath = "Interface\\AddOns\\ProcDoc\\img\\MageTermporalConvergance.tga",
         },
     },
