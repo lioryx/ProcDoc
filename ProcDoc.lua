@@ -26,6 +26,11 @@ local PROC_DATA = {
             texture          = "Interface\\Icons\\Spell_Nature_StormReach",
             alertTexturePath = "Interface\\AddOns\\ProcDoc\\img\\MageTemporalConvergence.tga",
         },
+        {
+            buffName         = "Flash Freeze",
+            texture          = "Interface\\Icons\\Spell_Fire_FrostResistanceTotem",
+            alertTexturePath = "Interface\\AddOns\\ProcDoc\\img\\MageFlashFreeze.tga",
+        },
     },
     ["DRUID"] = {
         {

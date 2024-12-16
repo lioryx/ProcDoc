@@ -64,7 +64,7 @@ Once installed and active:
 
 ![Warlock](https://github.com/wsmaxcy/ProcDoc/blob/main/img/Warlock.png)
 
-**2. Mage Clearcasting**
+**2. Mage Clearcasting and Temporal Convergence**
 
 ![Mage](https://github.com/wsmaxcy/ProcDoc/blob/main/img/Mage.png)
 
