@@ -1,6 +1,6 @@
 ## Interface: 11200
 ## Title: ProcDoc
-## Notes: Alerts you with big side textures when you get an instant-cast proc (like Shadow Trance, Clearcasting, etc.)
+## Notes: Alerts you with pulsing textures (like retail) of instant casts, timed procs, and other important events.
 ## Author: Clempton, Clumpton, Fruiter
 ## Version: 1.0
 
