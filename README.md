@@ -61,24 +61,31 @@ Once installed and active:
 ## Alerts
 
 **1. Warlock Shadow Trance**
+
 ![Warlock](https://github.com/wsmaxcy/ProcDoc/blob/main/img/Warlock.png)
 
 **2. Mage Clearcasting**
+
 ![Mage](https://github.com/wsmaxcy/ProcDoc/blob/main/img/Mage.png)
 
 **3. Druid Clearcasting**
+
 ![Druid](https://github.com/wsmaxcy/ProcDoc/blob/main/img/Druid.png)
 
 **4. Shaman Clearcasting**
+
 ![Shaman](https://github.com/wsmaxcy/ProcDoc/blob/main/img/Shaman.png)
 
 **5. Hunter Quick Shots**
+
 ![Hunter](https://github.com/wsmaxcy/ProcDoc/blob/main/img/Hunter.png)
 
 **6. Warrior Enrage and Flurry**
+
 ![Warrior](https://github.com/wsmaxcy/ProcDoc/blob/main/img/Warrior.png)
 
 **7. Rogue Remorseless Attacks**
+
 ![Rogue](https://github.com/wsmaxcy/ProcDoc/blob/main/img/Rogue.png)
 
 
