@@ -88,6 +88,10 @@ Once installed and active:
 
 ![Rogue](https://github.com/wsmaxcy/ProcDoc/blob/main/img/Rogue.png)
 
+**8. Priest Resurgence and Enlightened**
+
+![Priest](https://github.com/wsmaxcy/ProcDoc/blob/main/img/Priest.png)
+
 
 ---
 ## License
