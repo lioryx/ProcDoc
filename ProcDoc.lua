@@ -84,6 +84,7 @@ local PROC_DATA = {
             buffName         = "Enlightened",
             texture          = "Interface\\Icons\\Spell_Holy_PowerInfusion",
             alertTexturePath = "Interface\\AddOns\\ProcDoc\\img\\PriestEnlightened.tga",
+            alertStyle       = "TOP",  -- single texture above the player
         },
     },
     ["PALADIN"] = {},
