@@ -37,7 +37,13 @@ local PROC_DATA = {
             buffName         = "Clearcasting",
             texture          = "Interface\\Icons\\Spell_Shadow_ManaBurn",
             alertTexturePath = "Interface\\AddOns\\ProcDoc\\img\\DruidClearcasting.tga",
+            alertStyle       = "TOP",  -- single texture above the player
         },
+        {
+            buffName         = "Nature's Grace",
+            texture          = "Interface\\Icons\\Spell_Nature_NaturesBlessing",
+            alertTexturePath = "Interface\\AddOns\\ProcDoc\\img\\DruidNaturesGrace.tga",
+        }
     },
     ["SHAMAN"] = {
         {
@@ -68,7 +74,13 @@ local PROC_DATA = {
             alertStyle       = "TOP",  -- single texture above the player
         },
     },
-    ["PRIEST"]  = {},
+    ["PRIEST"]  = {
+        {
+            buffName         = "Resurgence",
+            texture          = "Interface\\Icons\\Spell_Holy_MindVision",
+            alertTexturePath = "Interface\\AddOns\\ProcDoc\\img\\PriestResurgence.tga",
+        },
+    },
     ["PALADIN"] = {},
     ["ROGUE"]   = {
         {
