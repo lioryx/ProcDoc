@@ -80,6 +80,11 @@ local PROC_DATA = {
             texture          = "Interface\\Icons\\Spell_Holy_MindVision",
             alertTexturePath = "Interface\\AddOns\\ProcDoc\\img\\PriestResurgence.tga",
         },
+        {
+            buffName         = "Enlightened",
+            texture          = "Interface\\Icons\\Spell_Holy_PowerInfusion",
+            alertTexturePath = "Interface\\AddOns\\ProcDoc\\img\\PriestEnlightened.tga",
+        },
     },
     ["PALADIN"] = {},
     ["ROGUE"]   = {
