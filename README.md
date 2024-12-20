@@ -64,7 +64,7 @@ Once installed and active:
 
 ![Warlock](https://github.com/wsmaxcy/ProcDoc/blob/main/img/Warlock.png)
 
-**2. Mage Clearcasting and Temporal Convergence**
+**2. Mage Clearcasting, Temporal Convergence, Arcane Surge, and Flash Freeze**
 
 ![Mage](https://github.com/wsmaxcy/ProcDoc/blob/main/img/Mage.png)
 
@@ -80,11 +80,11 @@ Once installed and active:
 
 ![Hunter](https://github.com/wsmaxcy/ProcDoc/blob/main/img/Hunter.png)
 
-**6. Warrior Enrage and Flurry**
+**6. Warrior Enrage and Overpower**
 
 ![Warrior](https://github.com/wsmaxcy/ProcDoc/blob/main/img/Warrior.png)
 
-**7. Rogue Remorseless Attacks**
+**7. Rogue Remorseless Attacks and Riposte**
 
 ![Rogue](https://github.com/wsmaxcy/ProcDoc/blob/main/img/Rogue.png)
 
