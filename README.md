@@ -88,7 +88,7 @@ Once installed and active:
 
 ![Rogue](https://github.com/wsmaxcy/ProcDoc/blob/main/img/Rogue.png)
 
-**8. Priest Resurgence and Enlightened**
+**8. Priest Resurgence, Enlightened and Searing Light**
 
 ![Priest](https://github.com/wsmaxcy/ProcDoc/blob/main/img/Priest.png)
 

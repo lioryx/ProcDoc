@@ -78,6 +78,11 @@ local PROC_DATA = {
             alertTexturePath = "Interface\\AddOns\\ProcDoc\\img\\PriestEnlightened.tga",
             alertStyle       = "TOP",
         },
+        {
+            buffName         = "Searing Light",
+            texture          = "Interface\\Icons\\Spell_Holy_SearingLightPriest",
+            alertTexturePath = "Interface\\AddOns\\ProcDoc\\img\\PriestSearingLight.tga",
+        }
     },
     ["PALADIN"] = {},
     ["ROGUE"]   = {
