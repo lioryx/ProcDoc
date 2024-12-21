@@ -100,7 +100,7 @@ local DEFAULT_ALERT_TEXTURE = "Interface\\AddOns\\ProcDoc\\img\\ProcDocAlert.tga
 -- 2) GLOBAL ANIMATION PARAMS
 ------------------------------------------------------------
 local minScale, maxScale = 0.8, 1.0
-local minAlpha, maxAlpha = 0.3, 0.8
+local minAlpha, maxAlpha = 0.6, 1.0
 local alphaStep = 0.01
 
 ------------------------------------------------------------
