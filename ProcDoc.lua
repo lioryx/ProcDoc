@@ -68,7 +68,7 @@ local PROC_DATA = {
     },
     ["PRIEST"]  = {
         {
-            buffName         = "Resurgence",
+            buffName         = "Songflower Serenade",
             texture          = "Interface\\Icons\\Spell_Holy_MindVision",
             alertTexturePath = "Interface\\AddOns\\ProcDoc\\img\\PriestResurgence.tga",
         },
@@ -217,14 +217,24 @@ local function CheckProcs()
     for i = 0, 31 do
         local buffTexture = GetPlayerBuffTexture(i)
         if buffTexture then
+            -- Build a tooltip for this buff so we can read the name
+            GameTooltip:SetOwner(UIParent, "ANCHOR_NONE")
+            GameTooltip:SetPlayerBuff(i)
+            local buffName = GameTooltipTextLeft1 and GameTooltipTextLeft1:GetText() or ""
+            GameTooltip:Hide()
+
+            -- Compare to the procs in PROC_DATA
             for _, procInfo in ipairs(classProcs) do
-                if buffTexture == procInfo.texture then
+                if (buffTexture == procInfo.texture) 
+                   and (buffName == procInfo.buffName) 
+                then
                     table.insert(activeProcList, procInfo)
                 end
             end
         end
     end
 
+    -- Process the procs we actually matched
     for _, procInfo in ipairs(activeProcList) do
         local style = procInfo.alertStyle or "SIDES"
         local alertObj = AcquireAlertFrame(style)
@@ -239,6 +249,7 @@ local function CheckProcs()
         end
     end
 end
+
 
 local auraFrame = CreateFrame("Frame")
 auraFrame:RegisterEvent("PLAYER_AURAS_CHANGED")
