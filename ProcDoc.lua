@@ -87,7 +87,7 @@ local PROC_DATA = {
     ["PALADIN"] = {},
     ["ROGUE"]   = {
         {
-            buffName         = "Remorseless Attacks",
+            buffName         = "Remorseless",
             texture          = "Interface\\Icons\\Ability_FiegnDead",
             alertTexturePath = "Interface\\AddOns\\ProcDoc\\img\\RogueRemorseless.tga",
         },
