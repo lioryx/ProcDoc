@@ -68,7 +68,7 @@ local PROC_DATA = {
     },
     ["PRIEST"]  = {
         {
-            buffName         = "Songflower Serenade",
+            buffName         = "Resurgence",
             texture          = "Interface\\Icons\\Spell_Holy_MindVision",
             alertTexturePath = "Interface\\AddOns\\ProcDoc\\img\\PriestResurgence.tga",
         },
