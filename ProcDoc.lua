@@ -523,7 +523,7 @@ auraFrame:SetScript("OnEvent", function()
     -- CheckAllActionProcs() 
 end)
 
-DEFAULT_CHAT_FRAME:AddMessage("|cff00ff00ProcDoc|r Loaded. Tracking procs for "..(UnitClass("player"))..".")
+DEFAULT_CHAT_FRAME:AddMessage("|cff00ff00ProcDoc|r Loaded. Tracking procs for "..(UnitClass("player"))..". Type |cff00ffff/procdoc|r for options.")
 ------------------------------------------------------------
 -- 9) TEST PROC + OPTIONS FRAME
 ------------------------------------------------------------
