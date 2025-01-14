@@ -2,6 +2,7 @@
 ## Title: ProcDoc
 ## Notes: Doctor up your proc alerts with pulsing images to make sure you never miss a proc.
 ## Author: Clempton, Clumpton, Fruiter
-## Version: 1.5.2
+## Version: 2.0.0
+## SavedVariables: ProcDocDB
 
 ProcDoc.lua
