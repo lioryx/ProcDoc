@@ -138,7 +138,7 @@ local PROC_DATA = {
         },
     },
 }
-
+}
 local ACTION_PROCS = {
     ["ROGUE"] = {
         {
