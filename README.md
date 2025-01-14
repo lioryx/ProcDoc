@@ -47,13 +47,13 @@
 ## Example Alerts
 
 1. **Warlock Shadow Trance**  
-   ![Warlock Shadow Trance](https://github.com/YourUserName/ProcDoc/blob/main/img/Warlock.png)
+   ![Warlock Shadow Trance](https://github.com/wsmaxcy/ProcDoc/blob/main/img/Warlock.png)
 
 2. **Mage Clearcasting, Arcane Surge**  
    ![Mage Arcane Surge](https://github.com/wsmaxcy/ProcDoc/blob/main/img/Mage.png)
 
 3. **Warrior Overpower**  
-   ![Warrior Overpower](https://github.com/YourUserName/ProcDoc/blob/main/img/Warrior.png)
+   ![Warrior Overpower](https://github.com/wsmaxcy/ProcDoc/blob/main/img/Warrior.png)
 
 Loads of others as well!
 
