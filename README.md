@@ -1,99 +1,90 @@
 # ProcDoc
 
-**ProcDoc** is a simple World of Warcraft (Turtle WoW / Vanilla) addon that displays flashy, pulsing alerts whenever you gain specific “instant cast” or “free cast” procs (e.g. Shadow Trance, Clearcasting). The alerts can appear in **two styles**:
-
-1. **SIDES** – Two vertical textures on either side of your character (like glowing wings).
-2. **TOP** – A single texture anchored above your character’s head (wider, banner-like).
-
-With ProcDoc, if multiple procs are active at the same time, you’ll see separate pulsing effects for each proc.
+**ProcDoc** is a lightweight World of Warcraft (Turtle WoW / Vanilla) addon that shows pulsing visuals whenever your character gains an instant-cast or free-cast buff—like Clearcasting, Shadow Trance, Overpower, etc. It automatically detects procs and displays on-screen alerts in a fun and noticeable way.
 
 ---
 
-## How It Works
+## Key Features
 
-- **Detect Procs**: The addon automatically checks if your character has any known instant/free-cast buffs.
-- **Show Alerts**: For each buff detected, ProcDoc displays **pulsing textures**:
-  - If the buff is configured to show on the sides, you’ll see **two** textures to the left and right of your character.
-  - If the buff is configured to show on top, you’ll see **one** texture above your character’s head.
-- **Pulsing Effects**: The textures smoothly fade in and out while slightly scaling, creating a dynamic alert effect.
-- **Multiple Procs**: If multiple buffs are active, each one shows its own alert style (some may be sides, some may be top).
+1. **Visual Alerts for Procs**  
+   Displays large, pulsing textures around or above your character whenever a supported proc is active.
 
----
+2. **Two Alert Styles**  
+   - **SIDES**: Two vertical textures flanking your character.  
+   - **TOP**: A single, wider texture above your character’s head.
 
-## What the User Will See
+3. **Multiple Buff Support**  
+   Supports many instant/free-cast buff procs (e.g. Shadow Trance, Clearcasting, Overpower), each with unique textures and placement.
 
-### Single Proc (SIDES)
-If you have a proc that uses the **SIDES** style (e.g. Shadow Trance for a Warlock), two matching TGA images appear on the left and right of your character. They’ll pulse in brightness and size until the proc buff expires, then vanish automatically.
-
-### Single Proc (TOP)
-If a buff is configured to appear **above** the character (like Warrior’s Flurry), you’ll see a single wide texture floating above your character’s head, pulsing until the buff expires.
-
-### Multiple Procs
-If you gain two or more special buffs at once (e.g. Warrior’s Enrage **and** Flurry), you might see both styles simultaneously: two vertical textures on the sides for one buff, plus a single wide texture up top for another buff.
+4. **No Manual Setup Needed**  
+   Simply install and go—proc detection is automatic. An in-game options panel (via `/procdoc`) lets you test custom visuals and tweak appearance settings.
 
 ---
 
 ## Installation
 
-1. **Download** or **Clone** the ProcDoc addon folder into your Turtle WoW/Vanilla WoW `AddOns` directory.  
-2. Ensure the folder name is **`ProcDoc`** and contains:
+1. **Download or Clone** the **`ProcDoc`** addon folder into your WoW `AddOns` directory.  
+2. Confirm the folder is named **`ProcDoc`** and contains:
    - `ProcDoc.lua`
    - `ProcDoc.toc`
-   - An `img` subfolder with various `.tga` files for the alert visuals.
-3. **Restart** or **Reload** the game client.  
-4. Open **AddOns** in the character screen or in-game to verify **ProcDoc** is enabled.
+   - An `img` folder with `.tga` (and optional `.png`) images.
+3. **Restart** or **Reload** your WoW client.
+4. (Optional) Type **`/procdoc`** in-game to open the settings/test panel.
 
 ---
 
-## Usage
+## How to Use
 
-Once installed and active:
+1. **Log In**: Enter the game with any class that has procs (Warrior, Mage, Priest, etc.).
+2. **Trigger a Proc**: Cast spells or fight until you get an “instant cast” buff (e.g. Clearcasting).
+3. **See the Alert**: Pulsing textures appear in the chosen style (**SIDES** or **TOP**).
+4. **Buff Ends**: The alert automatically disappears when the buff expires.
 
-1. **Log in** to your character (Mage, Warlock, Warrior, etc.).
-2. **Trigger** a known proc (e.g. cast spells until **Clearcasting** procs, or attack until **Flurry** procs).
-3. **Observe** the pulsing alert textures around or above your character when the proc is active.
-4. When the buff wears off, the alerts automatically hide.
-
-**That’s it!** There are no in-game slash commands or manual settings needed. The addon just works in the background.
+**Done!** You can also open the addon’s panel with **`/procdoc`** to test procs, modify transparency, or adjust offsets.
 
 ---
 
-## Alerts
+## Example Alerts
 
-**1. Warlock Shadow Trance**
+1. **Warlock Shadow Trance**  
+   ![Warlock Shadow Trance](https://github.com/YourUserName/ProcDoc/blob/main/img/WarlockShadowTrance.png)
 
-![Warlock](https://github.com/wsmaxcy/ProcDoc/blob/main/img/Warlock.png)
+2. **Mage Clearcasting, Arcane Surge**  
+   ![Mage Arcane Surge](https://github.com/YourUserName/ProcDoc/blob/main/img/MageArcaneSurge.png)
 
-**2. Mage Clearcasting, Temporal Convergence, Arcane Surge, and Flash Freeze**
+3. **Warrior Overpower**  
+   ![Warrior Overpower](https://github.com/YourUserName/ProcDoc/blob/main/img/WarriorOverpower.png)
 
-![Mage](https://github.com/wsmaxcy/ProcDoc/blob/main/img/Mage.png)
-
-**3. Druid Clearcasting**
-
-![Druid](https://github.com/wsmaxcy/ProcDoc/blob/main/img/Druid.png)
-
-**4. Shaman Clearcasting**
-
-![Shaman](https://github.com/wsmaxcy/ProcDoc/blob/main/img/Shaman.png)
-
-**5. Hunter Quick Shots**
-
-![Hunter](https://github.com/wsmaxcy/ProcDoc/blob/main/img/Hunter.png)
-
-**6. Warrior Enrage and Overpower**
-
-![Warrior](https://github.com/wsmaxcy/ProcDoc/blob/main/img/Warrior.png)
-
-**7. Rogue Remorseless Attacks and Riposte**
-
-![Rogue](https://github.com/wsmaxcy/ProcDoc/blob/main/img/Rogue.png)
-
-**8. Priest Resurgence, Enlightened and Searing Light**
-
-![Priest](https://github.com/wsmaxcy/ProcDoc/blob/main/img/Priest.png)
-
+*(Add or replace images/links above with your own.)*
 
 ---
+
+## Configuration
+
+- **Min/Max Transparency**: Controls how faint or bright the pulsing effect can get.
+- **Min/Max Size**: Changes how small or large the images become during pulsing.
+- **Pulse Speed**: Adjusts how quickly the images fade in/out.
+- **Offsets**: Shifts the alerts vertically (top) or horizontally (sides).
+
+You can experiment with these in the **`/procdoc`** panel. Changes are saved automatically.
+
+---
+
+## Known Procs
+
+ProcDoc supports a variety of class buffs, such as:
+- **Warlock**: Shadow Trance
+- **Mage**: Clearcasting, Temporal Convergence, Flash Freeze, Arcane Surge
+- **Warrior**: Enrage, Overpower
+- **Druid**: Clearcasting, Nature’s Grace
+- **Rogue**: Remorseless, Riposte
+- **Shaman**: Clearcasting
+- **Priest**: Resurgence, Enlightened, Searing Light
+- **Hunter**: Quick Shots
+*(And more can be added in the code.)*
+
+---
+
 ## License
 
- Feel free to use and share **ProcDoc** as you like. A mention or link back is always appreciated but not required. Enjoy your new proccing visuals!
+Feel free to use, modify, or share **ProcDoc**. A mention or credit is welcome but not required. Enjoy your new proccing visuals!
