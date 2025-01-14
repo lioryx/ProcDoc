@@ -68,6 +68,8 @@ Loads of others as well!
 
 You can experiment with these in the **`/procdoc`** panel. Changes are saved automatically.
 
+![Configuration](https://github.com/wsmaxcy/ProcDoc/blob/main/img/Config.png)
+
 ---
 
 ## Known Procs
