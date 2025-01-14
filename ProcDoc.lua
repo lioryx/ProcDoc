@@ -3,6 +3,14 @@
 ------------------------------------------------------------
 -- 0) GLOBALS
 ------------------------------------------------------------
+--if not minAlpha  then minAlpha  = 0.6  end
+--if not maxAlpha  then maxAlpha  = 1.0  end
+--if not minScale  then minScale  = 0.8  end
+--if not maxScale  then maxScale  = 1.0  end
+--if not alphaStep then alphaStep = 0.01 end
+--if not pulseSpeed then pulseSpeed = 1.0 end
+--if not topOffset then topOffset = 150 end
+--if not sideOffset then sideOffset = 150 end
 
 -- 1) CREATE A FRAME TO INITIALIZE DB
 local initFrame = CreateFrame("Frame", "ProcDocDBInitFrame", UIParent)
@@ -40,10 +48,8 @@ end)
 ------------------------------------------------------------
 local addonName = "ProcDoc"
 local ProcDoc   = CreateFrame("Frame", "ProcDocAlertFrame", UIParent)
-local ProcDoc   = CreateFrame("Frame", "ProcDocAlertFrame", UIParent)
 
 ------------------------------------------------------------
--- 2) TABLE OF PROCS
 -- 2) TABLE OF PROCS
 ------------------------------------------------------------
 local PROC_DATA = {
@@ -59,7 +65,6 @@ local PROC_DATA = {
             buffName         = "Clearcasting",
             texture          = "Interface\\Icons\\Spell_Shadow_ManaBurn",
             alertTexturePath = "Interface\\AddOns\\ProcDoc\\img\\MageClearcasting.tga",
-            alertStyle       = "TOP",
             alertStyle       = "TOP",
         },
         {
@@ -109,7 +114,6 @@ local PROC_DATA = {
         },
     },
     ["PRIEST"] = {
-    ["PRIEST"] = {
         {
             buffName         = "Resurgence",
             texture          = "Interface\\Icons\\Spell_Holy_MindVision",
@@ -126,10 +130,8 @@ local PROC_DATA = {
             texture          = "Interface\\Icons\\Spell_Holy_SearingLightPriest",
             alertTexturePath = "Interface\\AddOns\\ProcDoc\\img\\PriestSearingLight.tga",
         },
-        },
     },
     ["PALADIN"] = {},
-    ["ROGUE"] = {
     ["ROGUE"] = {
         {
             buffName         = "Remorseless",
@@ -138,11 +140,11 @@ local PROC_DATA = {
         },
     },
 }
-}
+
 local ACTION_PROCS = {
     ["ROGUE"] = {
         {
-            buffName        = "Riposte", 
+            buffName        = "Riposte",  -- <--- new
             texture         = "Interface\\Icons\\Ability_Warrior_Challange",
             alertTexturePath= "Interface\\AddOns\\ProcDoc\\img\\RogueRiposte.tga",
             alertStyle      = "SIDES",
@@ -151,7 +153,7 @@ local ACTION_PROCS = {
     },
     ["WARRIOR"] = {
         {
-            buffName        = "Overpower", 
+            buffName        = "Overpower", -- <--- new
             texture         = "Interface\\Icons\\Ability_MeleeDamage",
             alertTexturePath= "Interface\\AddOns\\ProcDoc\\img\\WarriorOverpower.tga",
             alertStyle      = "TOP",
@@ -160,7 +162,7 @@ local ACTION_PROCS = {
     },
     ["MAGE"] = {
         {
-            buffName        = "Arcane Surge", 
+            buffName        = "Arcane Surge", -- <--- new
             texture         = "Interface\\Icons\\INV_Enchant_EssenceMysticalLarge",
             alertTexturePath= "Interface\\AddOns\\ProcDoc\\img\\MageArcaneSurge.tga",
             alertStyle      = "TOP",
@@ -175,12 +177,14 @@ local DEFAULT_ALERT_TEXTURE = "Interface\\AddOns\\ProcDoc\\img\\ProcDocAlert.tga
 -- 3) ALERT FRAME POOL
 ----------------------------------------------------------------
 
+-- We'll keep a single table (alertFrames) but mark frames
+-- with "alertObj.isActionBased" if they belong to action procs
 local alertFrames = {}
 
 local function CreateAlertFrame(style)
     local alertObj = {}
     alertObj.isActive      = false
-    alertObj.isActionBased = false    
+    alertObj.isActionBased = false    -- default = false
     alertObj.style         = style
     alertObj.textures      = {}
     alertObj.pulseAlpha    = minAlpha
@@ -193,7 +197,6 @@ local function CreateAlertFrame(style)
 
         local tex = ProcDoc:CreateTexture(nil, "OVERLAY")
         tex:SetPoint("CENTER", UIParent, "CENTER", 0, topOffset)
-        tex:SetPoint("CENTER", UIParent, "CENTER", 0, topOffset)
         tex:SetWidth(alertObj.baseWidth)
         tex:SetHeight(alertObj.baseHeight)
         tex:SetAlpha(0)
@@ -205,7 +208,6 @@ local function CreateAlertFrame(style)
 
         local left = ProcDoc:CreateTexture(nil, "OVERLAY")
         left:SetPoint("CENTER", UIParent, "CENTER", -sideOffset, topOffset - 150)
-        left:SetPoint("CENTER", UIParent, "CENTER", -sideOffset, topOffset - 150)
         left:SetWidth(alertObj.baseWidth)
         left:SetHeight(alertObj.baseHeight)
         left:SetAlpha(0)
@@ -213,10 +215,8 @@ local function CreateAlertFrame(style)
 
         local right = ProcDoc:CreateTexture(nil, "OVERLAY")
         right:SetPoint("CENTER", UIParent, "CENTER", sideOffset, topOffset - 150)
-        right:SetPoint("CENTER", UIParent, "CENTER", sideOffset, topOffset - 150)
         right:SetWidth(alertObj.baseWidth)
         right:SetHeight(alertObj.baseHeight)
-        right:SetTexCoord(1,0,0,1)
         right:SetTexCoord(1,0,0,1)
         right:SetAlpha(0)
         right:Hide()
@@ -230,13 +230,7 @@ end
 
 -- Acquire a frame for either buff-based OR action-based usage
 local function AcquireAlertFrame(style, isActionBased)
--- Acquire a frame for either buff-based OR action-based usage
-local function AcquireAlertFrame(style, isActionBased)
     for _, alertObj in ipairs(alertFrames) do
-        if (not alertObj.isActive)
-           and (alertObj.style == style)
-           and (alertObj.isActionBased == isActionBased)
-        then
         if (not alertObj.isActive)
            and (alertObj.style == style)
            and (alertObj.isActionBased == isActionBased)
@@ -245,7 +239,6 @@ local function AcquireAlertFrame(style, isActionBased)
         end
     end
     local newAlert = CreateAlertFrame(style)
-    newAlert.isActionBased = isActionBased
     newAlert.isActionBased = isActionBased
     table.insert(alertFrames, newAlert)
     return newAlert
@@ -262,39 +255,16 @@ local function OnUpdateHandler()
         maxScale = minScale + 0.01
     end
 
-----------------------------------------------------------------
--- 4) ONUPDATE PULSE
-----------------------------------------------------------------
-local function OnUpdateHandler()
-    if maxAlpha <= minAlpha then
-        maxAlpha = minAlpha + 0.01
-    end
-    if maxScale <= minScale then
-        maxScale = minScale + 0.01
-    end
-
     for _, alertObj in ipairs(alertFrames) do
         if alertObj.isActive then
             alertObj.pulseAlpha = alertObj.pulseAlpha + (alertObj.pulseDir * pulseSpeed)
 
-            alertObj.pulseAlpha = alertObj.pulseAlpha + (alertObj.pulseDir * pulseSpeed)
-
             if alertObj.pulseAlpha < minAlpha then
-                alertObj.pulseAlpha = minAlpha
                 alertObj.pulseAlpha = minAlpha
                 alertObj.pulseDir   = alphaStep
             elseif alertObj.pulseAlpha > maxAlpha then
                 alertObj.pulseAlpha = maxAlpha
-                alertObj.pulseAlpha = maxAlpha
                 alertObj.pulseDir   = -alphaStep
-            end
-
-            local aRange = maxAlpha - minAlpha
-            local scale  = 1.0
-            if aRange > 0 then
-                local fraction = (alertObj.pulseAlpha - minAlpha) / aRange
-                scale = minScale + fraction * (maxScale - minScale)
-            end
             end
 
             local aRange = maxAlpha - minAlpha
@@ -315,20 +285,16 @@ end
 
 ProcDoc:SetScript("OnUpdate", OnUpdateHandler)
 ProcDoc:SetWidth(1)
-ProcDoc:SetWidth(1)
 ProcDoc:SetHeight(1)
 ProcDoc:SetPoint("CENTER", UIParent, "CENTER")
 
 ----------------------------------------------------------------
 -- 5) MERGE “BUFF” & “ACTION” PROCS FOR THIS CLASS
 ----------------------------------------------------------------
-----------------------------------------------------------------
--- 5) MERGE “BUFF” & “ACTION” PROCS FOR THIS CLASS
-----------------------------------------------------------------
 local _, playerClass = UnitClass("player")
 
 local normalProcs  = PROC_DATA[playerClass] or {}
-local actionProcs  = ACTION_PROCS[playerClass] or {}  
+local actionProcs  = ACTION_PROCS[playerClass] or {}  -- e.g. Overpower
 
 -- Merge them into one big “classProcs” table
 local classProcs = {}
@@ -345,14 +311,7 @@ end
 local function CheckProcs()
     -- Hide only the normal (buff-based) frames first
     -- i.e. only frames that are `not isActionBased`.
-    -- Hide only the normal (buff-based) frames first
-    -- i.e. only frames that are `not isActionBased`.
     for _, alertObj in ipairs(alertFrames) do
-        if (not alertObj.isActionBased) then
-            alertObj.isActive = false
-            for _, tex in ipairs(alertObj.textures) do
-                tex:Hide()
-            end
         if (not alertObj.isActionBased) then
             alertObj.isActive = false
             for _, tex in ipairs(alertObj.textures) do
@@ -361,7 +320,6 @@ local function CheckProcs()
         end
     end
 
-    local activeBuffProcs = {}
     local activeBuffProcs = {}
     for i = 0, 31 do
         local buffTexture = GetPlayerBuffTexture(i)
@@ -369,17 +327,12 @@ local function CheckProcs()
             GameTooltip:SetOwner(UIParent, "ANCHOR_NONE")
             GameTooltip:SetPlayerBuff(i)
             local buffName = (GameTooltipTextLeft1 and GameTooltipTextLeft1:GetText()) or ""
-            local buffName = (GameTooltipTextLeft1 and GameTooltipTextLeft1:GetText()) or ""
             GameTooltip:Hide()
 
             for _, procInfo in ipairs(normalProcs) do
                 if (buffTexture == procInfo.texture)
                    and (buffName == procInfo.buffName)
-            for _, procInfo in ipairs(normalProcs) do
-                if (buffTexture == procInfo.texture)
-                   and (buffName == procInfo.buffName)
                 then
-                    table.insert(activeBuffProcs, procInfo)
                     table.insert(activeBuffProcs, procInfo)
                 end
             end
@@ -387,18 +340,14 @@ local function CheckProcs()
     end
 
     for _, procInfo in ipairs(activeBuffProcs) do
-    for _, procInfo in ipairs(activeBuffProcs) do
         local style = procInfo.alertStyle or "SIDES"
         local alertObj = AcquireAlertFrame(style, false)  -- not isActionBased
-        local alertObj = AcquireAlertFrame(style, false)  -- not isActionBased
         alertObj.isActive   = true
         alertObj.pulseAlpha = minAlpha
         alertObj.pulseDir   = alphaStep
 
         local path = procInfo.alertTexturePath or DEFAULT_ALERT_TEXTURE
-        local path = procInfo.alertTexturePath or DEFAULT_ALERT_TEXTURE
         for _, tex in ipairs(alertObj.textures) do
-            tex:SetTexture(path)
             tex:SetTexture(path)
             tex:Show()
         end
@@ -440,57 +389,14 @@ local function ShowActionProcAlert(actionProc)
         state.alertObj = alertObj
     end
     state.isActive = true
-----------------------------------------------------------------
--- 6) ACTION-BASED DETECTION (Multiple)
-----------------------------------------------------------------
--- track states per ability
-local actionProcStates = {}
-
-local function ShowActionProcAlert(actionProc)
-    local spellName  = actionProc.spellName or "UnknownSpell"
-    local state      = actionProcStates[spellName] or {}
-    actionProcStates[spellName] = state
-
-    local alertObj   = state.alertObj
-    if alertObj and alertObj.isActive then
-        alertObj.pulseAlpha = minAlpha
-        alertObj.pulseDir   = alphaStep
-    else
-        -- Acquire a new alert frame for isActionBased = true
-        alertObj = AcquireAlertFrame(actionProc.alertStyle or "SIDES", true)
-        alertObj.isActive   = true
-        alertObj.pulseAlpha = minAlpha
-        alertObj.pulseDir   = alphaStep
-
-        local path = actionProc.alertTexturePath or actionProc.texture or DEFAULT_ALERT_TEXTURE
-        for _, tex in ipairs(alertObj.textures) do
-            tex:SetTexture(path)
-            tex:SetAlpha(minAlpha)
-            tex:SetWidth(alertObj.baseWidth * minScale)
-            tex:SetHeight(alertObj.baseHeight * minScale)
-            tex:Show()
-        end
-
-        state.alertObj = alertObj
-    end
-    state.isActive = true
 end
 
-local function HideActionProcAlert(actionProc)
-    local spellName = actionProc.spellName or "UnknownSpell"
-    local state     = actionProcStates[spellName]
-    if not state or not state.isActive then
 local function HideActionProcAlert(actionProc)
     local spellName = actionProc.spellName or "UnknownSpell"
     local state     = actionProcStates[spellName]
     if not state or not state.isActive then
         return
     end
-
-    local alertObj = state.alertObj
-    if alertObj and alertObj.isActive then
-        alertObj.isActive = false
-        for _, tex in ipairs(alertObj.textures) do
 
     local alertObj = state.alertObj
     if alertObj and alertObj.isActive then
@@ -498,20 +404,6 @@ local function HideActionProcAlert(actionProc)
         for _, tex in ipairs(alertObj.textures) do
             tex:Hide()
         end
-    end
-    state.isActive = false
-end
-
-local function FindActionSlotAndCheck(actionProc)
-    local spellName = actionProc.spellName or "UnknownSpell"
-    local texPath   = actionProc.texture or ""
-    if texPath == "" then
-        return
-    end
-
-    -- find slot
-    local foundSlot = nil
-    for slot = 1, 120 do
     end
     state.isActive = false
 end
@@ -534,25 +426,9 @@ local function FindActionSlotAndCheck(actionProc)
                 foundSlot = slot
                 break
             end
-        if actionTex then
-            local lowerActionTex = string.lower(actionTex)
-            local lowerWanted    = string.lower(texPath)
-            if lowerActionTex == lowerWanted then
-                foundSlot = slot
-                break
-            end
         end
     end
 
-    local state = actionProcStates[spellName] or {}
-    actionProcStates[spellName] = state
-
-    state.slot = foundSlot
-    if not foundSlot then
-        -- if previously active, hide
-        if state.isActive then
-            HideActionProcAlert(actionProc)
-        end
     local state = actionProcStates[spellName] or {}
     actionProcStates[spellName] = state
 
@@ -566,51 +442,17 @@ local function FindActionSlotAndCheck(actionProc)
     end
 
     local usable = IsUsableAction(foundSlot)
-    local usable = IsUsableAction(foundSlot)
     if usable then
-        if not state.isActive then
-            ShowActionProcAlert(actionProc)
         if not state.isActive then
             ShowActionProcAlert(actionProc)
         end
     else
         if state.isActive then
             HideActionProcAlert(actionProc)
-        if state.isActive then
-            HideActionProcAlert(actionProc)
         end
     end
 end
 
-local function CheckAllActionProcs()
-    for _, actionProc in ipairs(actionProcs) do
-        FindActionSlotAndCheck(actionProc)
-    end
-end
-
-local function OnSpellcastSucceeded(arg1, arg2)
-    print("|cffffff00[DEBUG]|r OnSpellcastSucceeded => "..tostring(arg1).." => "..tostring(arg2))
-    for _, actionProc in ipairs(actionProcs) do
-        if arg1 == "player" and (arg2 == actionProc.spellName) then
-            print("|cffffff00[DEBUG]|r  => Hiding after cast for "..arg2)
-            HideActionProcAlert(actionProc)
-        end
-    end
-end
-
-------------------------------------------------------------
---7) The event frame for action-based procs
-------------------------------------------------------------
-
--- If your older client needs the old style event usage, do the "global event" trick:
-local actionFrame = CreateFrame("Frame", "ProcDocActionFrame", UIParent)
-actionFrame:RegisterEvent("PLAYER_LOGIN")
-actionFrame:RegisterEvent("ACTIONBAR_UPDATE_USABLE")
-actionFrame:RegisterEvent("ACTIONBAR_PAGE_CHANGED")
-actionFrame:RegisterEvent("UPDATE_BONUS_ACTIONBAR")
-actionFrame:RegisterEvent("UPDATE_SHAPESHIFT_FORM")
-actionFrame:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
-actionFrame:RegisterEvent("PLAYER_TARGET_CHANGED")
 local function CheckAllActionProcs()
     for _, actionProc in ipairs(actionProcs) do
         FindActionSlotAndCheck(actionProc)
@@ -677,10 +519,11 @@ local auraFrame = CreateFrame("Frame", "ProcDocAuraFrame", UIParent)
 auraFrame:RegisterEvent("PLAYER_AURAS_CHANGED")
 auraFrame:SetScript("OnEvent", function()
     CheckProcs()
+    -- also optionally check action-based again
+    -- CheckAllActionProcs() 
 end)
 
-DEFAULT_CHAT_FRAME:AddMessage("|cff00ff00ProcDoc|r Loaded. Tracking procs for "..(UnitClass("player"))..". Use /procdoc to show options.")
-
+DEFAULT_CHAT_FRAME:AddMessage("|cff00ff00ProcDoc|r Loaded. Tracking procs for "..(UnitClass("player"))..".")
 ------------------------------------------------------------
 -- 9) TEST PROC + OPTIONS FRAME
 ------------------------------------------------------------
@@ -781,7 +624,7 @@ local function ShowTestBuffAlert(procInfo)
         testProcAlerts[procInfo.buffName] = alertObj
     end
 
-    -- Now ALWAYS re-anchor them using the current topOffset/sideOffset
+    -- Now **always** re-anchor them using the current topOffset/sideOffset
     if style == "TOP" then
         local tex = alertObj.textures[1]
         tex:ClearAllPoints()
@@ -878,6 +721,7 @@ local function CreateProcDocOptionsFrame()
         if high1 then high1:SetText("1") end
         if txt1  then txt1:SetText(string.format("%.2f", minAlpha)) end
 
+        -- Using older style: no arguments, use `this`
         minTransSlider:SetScript("OnValueChanged", function()
             local slider = this
             local value  = slider:GetValue()
@@ -937,7 +781,6 @@ local function CreateProcDocOptionsFrame()
                 if value > 1 then value = 1 end
             end
             maxAlpha = value
-            
             -- SAVE to DB:
             if ProcDocDB and ProcDocDB.globalVars then
                 ProcDocDB.globalVars.maxAlpha = maxAlpha
