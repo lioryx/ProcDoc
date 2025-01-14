@@ -3,14 +3,6 @@
 ------------------------------------------------------------
 -- 0) GLOBALS
 ------------------------------------------------------------
---if not minAlpha  then minAlpha  = 0.6  end
---if not maxAlpha  then maxAlpha  = 1.0  end
---if not minScale  then minScale  = 0.8  end
---if not maxScale  then maxScale  = 1.0  end
---if not alphaStep then alphaStep = 0.01 end
---if not pulseSpeed then pulseSpeed = 1.0 end
---if not topOffset then topOffset = 150 end
---if not sideOffset then sideOffset = 150 end
 
 -- 1) CREATE A FRAME TO INITIALIZE DB
 local initFrame = CreateFrame("Frame", "ProcDocDBInitFrame", UIParent)
@@ -144,7 +136,7 @@ local PROC_DATA = {
 local ACTION_PROCS = {
     ["ROGUE"] = {
         {
-            buffName        = "Riposte",  -- <--- new
+            buffName        = "Riposte",  
             texture         = "Interface\\Icons\\Ability_Warrior_Challange",
             alertTexturePath= "Interface\\AddOns\\ProcDoc\\img\\RogueRiposte.tga",
             alertStyle      = "SIDES",
@@ -153,7 +145,7 @@ local ACTION_PROCS = {
     },
     ["WARRIOR"] = {
         {
-            buffName        = "Overpower", -- <--- new
+            buffName        = "Overpower", 
             texture         = "Interface\\Icons\\Ability_MeleeDamage",
             alertTexturePath= "Interface\\AddOns\\ProcDoc\\img\\WarriorOverpower.tga",
             alertStyle      = "TOP",
@@ -162,7 +154,7 @@ local ACTION_PROCS = {
     },
     ["MAGE"] = {
         {
-            buffName        = "Arcane Surge", -- <--- new
+            buffName        = "Arcane Surge", 
             texture         = "Interface\\Icons\\INV_Enchant_EssenceMysticalLarge",
             alertTexturePath= "Interface\\AddOns\\ProcDoc\\img\\MageArcaneSurge.tga",
             alertStyle      = "TOP",
@@ -177,14 +169,12 @@ local DEFAULT_ALERT_TEXTURE = "Interface\\AddOns\\ProcDoc\\img\\ProcDocAlert.tga
 -- 3) ALERT FRAME POOL
 ----------------------------------------------------------------
 
--- We'll keep a single table (alertFrames) but mark frames
--- with "alertObj.isActionBased" if they belong to action procs
 local alertFrames = {}
 
 local function CreateAlertFrame(style)
     local alertObj = {}
     alertObj.isActive      = false
-    alertObj.isActionBased = false    -- default = false
+    alertObj.isActionBased = false    
     alertObj.style         = style
     alertObj.textures      = {}
     alertObj.pulseAlpha    = minAlpha
@@ -341,7 +331,7 @@ local function CheckProcs()
 
     for _, procInfo in ipairs(activeBuffProcs) do
         local style = procInfo.alertStyle or "SIDES"
-        local alertObj = AcquireAlertFrame(style, false)  -- not isActionBased
+        local alertObj = AcquireAlertFrame(style, false)  
         alertObj.isActive   = true
         alertObj.pulseAlpha = minAlpha
         alertObj.pulseDir   = alphaStep
@@ -519,8 +509,7 @@ local auraFrame = CreateFrame("Frame", "ProcDocAuraFrame", UIParent)
 auraFrame:RegisterEvent("PLAYER_AURAS_CHANGED")
 auraFrame:SetScript("OnEvent", function()
     CheckProcs()
-    -- also optionally check action-based again
-    -- CheckAllActionProcs() 
+
 end)
 
 DEFAULT_CHAT_FRAME:AddMessage("|cff00ff00ProcDoc|r Loaded. Tracking procs for "..(UnitClass("player"))..". Type |cff00ffff/procdoc|r for options.")
@@ -781,6 +770,7 @@ local function CreateProcDocOptionsFrame()
                 if value > 1 then value = 1 end
             end
             maxAlpha = value
+            
             -- SAVE to DB:
             if ProcDocDB and ProcDocDB.globalVars then
                 ProcDocDB.globalVars.maxAlpha = maxAlpha
@@ -1037,7 +1027,7 @@ local function CreateProcDocOptionsFrame()
         -------------------------------------------------------------
         -- A table to hold references to each buff's checkbox
         -------------------------------------------------------------
-        local checkBoxes = {}  -- e.g. checkBoxes[buffName] = that checkbox
+        local checkBoxes = {}  
 
         -------------------------------------------------------------
         -- In your for-loop that creates checkboxes, store them:
