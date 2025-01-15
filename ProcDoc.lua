@@ -151,6 +151,13 @@ local ACTION_PROCS = {
             alertStyle      = "TOP",
             spellName       = "Overpower"
         },
+        {
+            buffName        = "Execute", 
+            texture         = "Interface\\Icons\\inv_sword_48",
+            alertTexturePath= "Interface\\AddOns\\ProcDoc\\img\\WarriorExecute.tga",
+            alertStyle      = "TOP",
+            spellName       = "Execute"
+        },
     },
     ["MAGE"] = {
         {
@@ -160,9 +167,34 @@ local ACTION_PROCS = {
             alertStyle      = "TOP",
             spellName       = "Arcane Surge"
         },
-    },    
-}
+    },
+    ["HUNTER"] = {
+        {
+            buffName        = "Counterattack", 
+            texture         = "Interface\\Icons\\Ability_Warrior_Challange",
+            alertTexturePath= "Interface\\AddOns\\ProcDoc\\img\\HunterCounterattack.tga",
+            alertStyle      = "TOP",
+            spellName       = "Counterattack"
+        },
+        {
+            buffName        = "Mongoose Bite", 
+            texture         = "Interface\\Icons\\Ability_Hunter_Swiftstrike",
+            alertTexturePath= "Interface\\AddOns\\ProcDoc\\img\\HunterMongooseBite.tga",
+            alertStyle      = "TOP",
+            spellName       = "Mongoose Bite"
+        },
+    },
+    ["PALADIN"] = {
+        {
+            buffName        = "Hammer of Wrath", 
+            texture         = "Interface\\Icons\\Ability_Thunderclap",
+            alertTexturePath= "Interface\\AddOns\\ProcDoc\\img\\PaladinHammer.tga",
+            alertStyle      = "SIDES",
+            spellName       = "Hammer of Wrath"
+        },    
 
+    },
+}
 local DEFAULT_ALERT_TEXTURE = "Interface\\AddOns\\ProcDoc\\img\\ProcDocAlert.tga"
 
 ----------------------------------------------------------------
@@ -667,9 +699,22 @@ local function CreateProcDocOptionsFrame()
         f:SetScript("OnDragStart", function() f:StartMoving() end)
         f:SetScript("OnDragStop", function() f:StopMovingOrSizing() end)
 
-        
+         -- SECTION FRAME
+         local sectionFrame = CreateFrame("Frame", nil, f)
+         sectionFrame:SetPoint("TOPLEFT", f, "TOPLEFT", 15, -30)
+         sectionFrame:SetPoint("BOTTOMRIGHT", f, "BOTTOMRIGHT", -15, 245)
+         sectionFrame:SetBackdrop({
+             bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
+             edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+             tile = true, tileSize = 8, edgeSize = 16,
+             insets = { left = 3, right = 3, top = 3, bottom = 3 }
+         })
+         sectionFrame:SetBackdropColor(0.2, 0.2, 0.2, 1)
+         sectionFrame:SetBackdropBorderColor(0.5, 0.5, 0.5, 1)        
 
         table.insert(UISpecialFrames, "ProcDocOptionsFrame")
+
+
 
         -----------------------------------------------------
         -- TITLE
@@ -684,17 +729,18 @@ local function CreateProcDocOptionsFrame()
         titleTex:SetAllPoints()
 
         local title = titleFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-        title:SetText("|cFF00FFFF[ProcDoc]|r Options")
+        title:SetText("|cff00ff00[ProcDoc]|r Options")
         title:SetPoint("TOP", 0, -14)
 
+        
 
         -----------------------------------------------------
         -- MIN TRANSPARENCY SLIDER
         -----------------------------------------------------
-        local sliderLabel1 = f:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-        sliderLabel1:SetPoint("TOPLEFT", 20, -40)
+        local sliderLabel1 = sectionFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+        sliderLabel1:SetPoint("TOPLEFT", 10, -10)
         sliderLabel1:SetText("Min Transparency:")
-
+        
         local minTransSlider = CreateFrame("Slider", "ProcDocMinTransSlider", f, "OptionsSliderTemplate")
         minTransSlider:SetPoint("TOPLEFT", 20, -60)
         minTransSlider:SetWidth(300)
@@ -740,8 +786,8 @@ local function CreateProcDocOptionsFrame()
         -----------------------------------------------------
         -- MAX TRANSPARENCY SLIDER
         -----------------------------------------------------
-        local sliderLabel2 = f:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-        sliderLabel2:SetPoint("TOPLEFT", 20, -100)
+        local sliderLabel2 = sectionFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+        sliderLabel2:SetPoint("TOPLEFT", 10, -70)
         sliderLabel2:SetText("Max Transparency:")
 
         local maxTransSlider = CreateFrame("Slider", "ProcDocMaxTransSlider", f, "OptionsSliderTemplate")
@@ -787,8 +833,8 @@ local function CreateProcDocOptionsFrame()
         -----------------------------------------------------
         -- MIN SIZE SLIDER
         -----------------------------------------------------
-        local sizeLabel1 = f:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-        sizeLabel1:SetPoint("TOPLEFT", 20, -160)
+        local sizeLabel1 = sectionFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+        sizeLabel1:SetPoint("TOPLEFT", 10, -130)
         sizeLabel1:SetText("Min Size:")
 
         local minSizeSlider = CreateFrame("Slider", "ProcDocMinSizeSlider", f, "OptionsSliderTemplate")
@@ -834,8 +880,8 @@ local function CreateProcDocOptionsFrame()
         -----------------------------------------------------
         -- MAX SIZE SLIDER
         -----------------------------------------------------
-        local sizeLabel2 = f:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-        sizeLabel2:SetPoint("TOPLEFT", 20, -220)
+        local sizeLabel2 = sectionFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+        sizeLabel2:SetPoint("TOPLEFT", 10, -190)
         sizeLabel2:SetText("Max Size:")
 
         local maxSizeSlider = CreateFrame("Slider", "ProcDocMaxSizeSlider", f, "OptionsSliderTemplate")
@@ -882,8 +928,8 @@ local function CreateProcDocOptionsFrame()
         -- Pulse Speed Slider
         -----------------------------------------------------
 
-        local speedLabel = f:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-        speedLabel:SetPoint("TOPLEFT", 20, -280)
+        local speedLabel = sectionFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+        speedLabel:SetPoint("TOPLEFT", 10, -250)
         speedLabel:SetText("Pulse Speed:")
 
         local pulseSpeedSlider = CreateFrame("Slider", "ProcDocPulseSpeedSlider", f, "OptionsSliderTemplate")
@@ -942,9 +988,9 @@ local function CreateProcDocOptionsFrame()
         ------------------------------------
         -- Top Offset Slider
         ------------------------------------
-        local topLabel = f:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-        topLabel:SetPoint("TOPLEFT", 20, -340)
-        topLabel:SetText("Top Offset (Vertical):")
+        local topLabel = sectionFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+        topLabel:SetPoint("TOPLEFT", 10, -310)
+        topLabel:SetText("Top Offset:")
 
         local topOffsetSlider = CreateFrame("Slider", "ProcDocTopOffsetSlider", f, "OptionsSliderTemplate")
         topOffsetSlider:SetPoint("TOPLEFT", 20, -360)
@@ -980,9 +1026,9 @@ local function CreateProcDocOptionsFrame()
         ------------------------------------
         -- Side Offset Slider
         ------------------------------------
-        local sideLabel = f:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-        sideLabel:SetPoint("TOPLEFT", 20, -400)
-        sideLabel:SetText("Side Offset (Horizontal):")
+        local sideLabel = sectionFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+        sideLabel:SetPoint("TOPLEFT", 10, -370)
+        sideLabel:SetText("Side Offset:")
 
         local sideOffsetSlider = CreateFrame("Slider", "ProcDocSideOffsetSlider", f, "OptionsSliderTemplate")
         sideOffsetSlider:SetPoint("TOPLEFT", 20, -420)
@@ -1020,8 +1066,21 @@ local function CreateProcDocOptionsFrame()
         -- PER-BUFF CHECKBOXES
         -----------------------------------------------------
         local testLabel = f:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-        testLabel:SetPoint("TOPLEFT", 20, -455)
-        testLabel:SetText("|cff00ff00Test Buffs for " .. (UnitClass("player")) .. "|r")
+        testLabel:SetPoint("TOPLEFT", 20, -460)
+        testLabel:SetText("|cffffffffTest Buffs for " .. (UnitClass("player")) .. "|r")
+
+         -- SECTION FRAME
+        local sectionFrame2 = CreateFrame("Frame", nil, f)
+        sectionFrame2:SetPoint("TOPLEFT", f, "TOPLEFT", 15, -475)
+        sectionFrame2:SetPoint("BOTTOMRIGHT", f, "BOTTOMRIGHT", -15, 80)
+        sectionFrame2:SetBackdrop({
+            bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
+            edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+            tile = true, tileSize = 8, edgeSize = 16,
+            insets = { left = 3, right = 3, top = 3, bottom = 3 }
+        })
+        sectionFrame2:SetBackdropColor(0.2, 0.2, 0.2, 1)
+        sectionFrame2:SetBackdropBorderColor(0.5, 0.5, 0.5, 1)
 
         local yOffset = -480
         -------------------------------------------------------------
@@ -1129,6 +1188,7 @@ local function CreateProcDocOptionsFrame()
             f:Hide()
 
         end)
+        
     end
 
     ProcDocOptionsFrame:Show()
