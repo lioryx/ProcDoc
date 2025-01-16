@@ -72,18 +72,62 @@ You can experiment with these in the **`/procdoc`** panel. Changes are saved aut
 
 ---
 
-## Known Procs
+## Supported Procs
 
-ProcDoc supports a variety of class buffs, such as:
-- **Warlock**: Shadow Trance
-- **Mage**: Clearcasting, Temporal Convergence, Flash Freeze, Arcane Surge
-- **Warrior**: Enrage, Overpower
-- **Druid**: Clearcasting, Nature’s Grace
-- **Rogue**: Remorseless, Riposte
-- **Shaman**: Clearcasting
-- **Priest**: Resurgence, Enlightened, Searing Light
-- **Hunter**: Quick Shots
-*(And more can be added in the code.)*
+ProcDoc supports a variety of procs and alerts when key abilities or buffs become available for each class. Below is a list of currently supported procs:
+
+### **Warlock**
+- **Shadow Trance**: Procs from Nightfall, allowing an instant Shadow Bolt cast.
+
+
+### **Mage**
+- **Clearcasting**: Grants a free spell cast (Arcane Concentration proc).
+- **Netherwind Focus**: Part of the Netherwind set bonus, increases spell efficiency.
+- **Temporal Convergence**: Unique Mage buff (custom to Turtle WoW).
+- **Flash Freeze**: Enhances Frost-based spells (custom to Turtle WoW).
+- **Arcane Surge**: Boosts Arcane damage (custom to Turtle WoW).
+
+
+### **Warrior**
+- **Enrage**: Triggered after being critically hit, increases physical damage.
+- **Overpower**: Becomes available after the target dodges.
+- **Execute**: Becomes available when the target's health drops below 20% (25% with talents).
+
+
+### **Druid**
+- **Clearcasting**: Grants a free attack or spell (Omen of Clarity proc).
+- **Nature’s Grace**: Reduces the cast time of the next spell after landing a critical hit.
+
+
+### **Rogue**
+- **Remorseless**: Increases critical strike chance after killing an enemy.
+- **Riposte**: Becomes available after parrying an attack.
+
+
+### **Shaman**
+- **Clearcasting**: Grants a free spell cast (via Elemental Focus talent).
+
+
+### **Priest**
+- **Resurgence**: Unique Priest proc (custom to Turtle WoW).
+- **Enlightened**: Provides a temporary boost to abilities (custom to Turtle WoW).
+- **Searing Light**: Increases damage for specific spells (custom to Turtle WoW).
+
+
+### **Hunter**
+- **Quick Shots**: Increases attack speed (via Improved Aspect of the Hawk talent).
+- **Counterattack**: Becomes available after parrying an attack.
+- **Mongoose Bite**: Becomes available after dodging an attack.
+
+
+### **Paladin**
+- **Hammer of Wrath**: Becomes available when the target is below 20% health (Turtle WoW addition).
+
+
+### Additional Notes
+- The list includes both classic procs and custom procs unique to Turtle WoW.
+- New procs and alerts can easily be added by modifying the configuration in the `PROC_DATA` and `ACTION_PROCS` tables in the code. That, or hit me up and I can add it to the main addon!
+
 
 ---
 
