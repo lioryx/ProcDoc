@@ -91,7 +91,13 @@ local PROC_DATA = {
             texture          = "Interface\\Icons\\Spell_Nature_NaturesBlessing",
             alertTexturePath = "Interface\\AddOns\\ProcDoc\\img\\DruidNaturesGrace.tga",
             alertStyle       = "SIDES",
-        }
+        },
+        {
+            buffName         = "Tiger's Fury",
+            texture          = "Interface\\Icons\\Ability_Mount_JungleTiger",
+            alertTexturePath = "Interface\\AddOns\\ProcDoc\\img\\HunterMongooseBite.tga",
+            alertStyle       = "SIDES2",
+        },
     },
     ["SHAMAN"] = {
         {
