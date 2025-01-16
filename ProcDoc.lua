@@ -766,6 +766,21 @@ local function CreateProcDocOptionsFrame()
         title:SetText("|cff00ff00[ProcDoc]|r Options")
         title:SetPoint("TOP", 0, -14)
 
+        -- Update Sliders Function
+        local function UpdateLiveProcs()
+            for _, alertObj in ipairs(alertFrames) do
+                if alertObj.isActive then
+                    alertObj.pulseAlpha = minAlpha
+                    alertObj.pulseDir = alphaStep
+        
+                    for _, tex in ipairs(alertObj.textures) do
+                        tex:SetAlpha(minAlpha)
+                        tex:SetWidth(alertObj.baseWidth * minScale)
+                        tex:SetHeight(alertObj.baseHeight * minScale)
+                    end
+                end
+            end
+        end
         
 
         -----------------------------------------------------
@@ -814,7 +829,7 @@ local function CreateProcDocOptionsFrame()
                 localText:SetText(string.format("%.2f", value))
             end
 
-            --RefreshTestProc()
+            UpdateLiveProcs()
         end)
 
         -----------------------------------------------------
@@ -861,7 +876,7 @@ local function CreateProcDocOptionsFrame()
                 localText:SetText(string.format("%.2f", value))
             end
 
-            --RefreshTestProc()
+            UpdateLiveProcs()
         end)
 
         -----------------------------------------------------
@@ -908,7 +923,7 @@ local function CreateProcDocOptionsFrame()
                 localText:SetText(string.format("%.2f", value))
             end
 
-            --RefreshTestProc()
+            UpdateLiveProcs()
         end)
 
         -----------------------------------------------------
@@ -955,7 +970,7 @@ local function CreateProcDocOptionsFrame()
                 localText:SetText(string.format("%.2f", value))
             end
 
-            --RefreshTestProc()
+            UpdateLiveProcs()
         end)
 
         -----------------------------------------------------
@@ -999,33 +1014,24 @@ local function CreateProcDocOptionsFrame()
         end)
 
         local function ReanchorAllLiveProcs()
-            for _, procInfo in ipairs(classProcs) do
-                -- Get the corresponding alert object
-                local alertObj = testProcAlerts[procInfo.buffName]
-                
-                if alertObj and alertObj.isActive then
-                    if procInfo.alertStyle == "TOP" or procInfo.alertStyle == "TOP2" then
+            for _, alertObj in ipairs(alertFrames) do
+                if alertObj.isActive then
+                    -- Update position based on style
+                    if alertObj.style == "TOP" or alertObj.style == "TOP2" then
                         local tex = alertObj.textures[1]
                         tex:ClearAllPoints()
-                        local offsetY = (procInfo.alertStyle == "TOP2") and (topOffset + 50) or topOffset
+                        local offsetY = (alertObj.style == "TOP2") and (topOffset + 50) or topOffset
                         tex:SetPoint("CENTER", UIParent, "CENTER", 0, offsetY)
-                    elseif procInfo.alertStyle == "SIDES" or procInfo.alertStyle == "SIDES2" then
+                    elseif alertObj.style == "SIDES" or alertObj.style == "SIDES2" then
                         local left = alertObj.textures[1]
                         local right = alertObj.textures[2]
-                        
-                        local offsetX = (procInfo.alertStyle == "SIDES2") and (sideOffset + 50) or sideOffset
+        
+                        local offsetX = (alertObj.style == "SIDES2") and (sideOffset + 50) or sideOffset
                         left:ClearAllPoints()
                         left:SetPoint("CENTER", UIParent, "CENTER", -offsetX, topOffset - 150)
-                        
+        
                         right:ClearAllPoints()
                         right:SetPoint("CENTER", UIParent, "CENTER", offsetX, topOffset - 150)
-                    end
-                else
-                    -- If the proc is inactive, ensure textures are hidden
-                    if alertObj then
-                        for _, tex in ipairs(alertObj.textures) do
-                            tex:Hide()
-                        end
                     end
                 end
             end
@@ -1064,8 +1070,7 @@ local function CreateProcDocOptionsFrame()
             if ProcDocDB and ProcDocDB.globalVars then
                 ProcDocDB.globalVars.topOffset = topOffset
             end
-            -- If test proc is active, refresh to see new offset
-            --RefreshTestProc()
+
             ReanchorAllLiveProcs()
         end)
 
@@ -1103,8 +1108,7 @@ local function CreateProcDocOptionsFrame()
                 ProcDocDB.globalVars.sideOffset = sideOffset
             end
 
-            -- If test proc is active, refresh to see new offset
-            --RefreshTestProc()
+
             ReanchorAllLiveProcs()
         end)
 
