@@ -98,7 +98,7 @@ ProcDoc supports a variety of procs and alerts when key abilities or buffs becom
 
 
 ### **Priest**
-![Shaman](https://github.com/wsmaxcy/ProcDoc/blob/main/img/Shaman.png)
+![Priest](https://github.com/wsmaxcy/ProcDoc/blob/main/img/Priest.png)
 - **Resurgence**: Unique Priest proc (custom to Turtle WoW).
 - **Enlightened**: Provides a temporary boost to abilities (custom to Turtle WoW).
 - **Searing Light**: Increases damage for specific spells (custom to Turtle WoW).
