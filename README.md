@@ -9,14 +9,10 @@
 1. **Visual Alerts for Procs**  
    Displays large, pulsing textures around or above your character whenever a supported proc is active.
 
-2. **Two Alert Styles**  
-   - **SIDES**: Two vertical textures flanking your character.  
-   - **TOP**: A single, wider texture above your character’s head.
-
-3. **Multiple Buff Support**  
+2. **Multiple Buff Support**  
    Supports many instant/free-cast buff procs (e.g. Shadow Trance, Clearcasting, Overpower), each with unique textures and placement.
 
-4. **No Manual Setup Needed**  
+3. **No Manual Setup Needed**  
    Simply install and go—proc detection is automatic. An in-game options panel (via `/procdoc`) lets you test custom visuals and tweak appearance settings.
 
 ---
@@ -44,21 +40,6 @@
 
 ---
 
-## Example Alerts
-
-1. **Warlock Shadow Trance**  
-   ![Warlock Shadow Trance](https://github.com/wsmaxcy/ProcDoc/blob/main/img/Warlock.png)
-
-2. **Mage Clearcasting, Arcane Surge**  
-   ![Mage Arcane Surge](https://github.com/wsmaxcy/ProcDoc/blob/main/img/Mage.png)
-
-3. **Warrior Overpower**  
-   ![Warrior Overpower](https://github.com/wsmaxcy/ProcDoc/blob/main/img/Warrior.png)
-
-Loads of others as well!
-
----
-
 ## Configuration
 
 - **Min/Max Transparency**: Controls how faint or bright the pulsing effect can get.
@@ -77,10 +58,12 @@ You can experiment with these in the **`/procdoc`** panel. Changes are saved aut
 ProcDoc supports a variety of procs and alerts when key abilities or buffs become available for each class. Below is a list of currently supported procs:
 
 ### **Warlock**
+![Warlock](https://github.com/wsmaxcy/ProcDoc/blob/main/img/Warlock.png)
 - **Shadow Trance**: Procs from Nightfall, allowing an instant Shadow Bolt cast.
 
 
 ### **Mage**
+![Mage](https://github.com/wsmaxcy/ProcDoc/blob/main/img/Mage.png)
 - **Clearcasting**: Grants a free spell cast (Arcane Concentration proc).
 - **Netherwind Focus**: Part of the Netherwind set bonus, increases spell efficiency.
 - **Temporal Convergence**: Unique Mage buff (custom to Turtle WoW).
@@ -89,38 +72,47 @@ ProcDoc supports a variety of procs and alerts when key abilities or buffs becom
 
 
 ### **Warrior**
+![Warrior](https://github.com/wsmaxcy/ProcDoc/blob/main/img/Warrior.png)
 - **Enrage**: Triggered after being critically hit, increases physical damage.
 - **Overpower**: Becomes available after the target dodges.
 - **Execute**: Becomes available when the target's health drops below 20% (25% with talents).
 
 
 ### **Druid**
+![Druid](https://github.com/wsmaxcy/ProcDoc/blob/main/img/Druid.png)
 - **Clearcasting**: Grants a free attack or spell (Omen of Clarity proc).
 - **Nature’s Grace**: Reduces the cast time of the next spell after landing a critical hit.
 
 
 ### **Rogue**
+![Rogue](https://github.com/wsmaxcy/ProcDoc/blob/main/img/Rogue.png)
+
 - **Remorseless**: Increases critical strike chance after killing an enemy.
 - **Riposte**: Becomes available after parrying an attack.
 
 
 ### **Shaman**
+![Shaman](https://github.com/wsmaxcy/ProcDoc/blob/main/img/Shaman.png)
+
 - **Clearcasting**: Grants a free spell cast (via Elemental Focus talent).
 
 
 ### **Priest**
+![Shaman](https://github.com/wsmaxcy/ProcDoc/blob/main/img/Shaman.png)
 - **Resurgence**: Unique Priest proc (custom to Turtle WoW).
 - **Enlightened**: Provides a temporary boost to abilities (custom to Turtle WoW).
 - **Searing Light**: Increases damage for specific spells (custom to Turtle WoW).
 
 
 ### **Hunter**
+![Hunter](https://github.com/wsmaxcy/ProcDoc/blob/main/img/Hunter.png)
 - **Quick Shots**: Increases attack speed (via Improved Aspect of the Hawk talent).
 - **Counterattack**: Becomes available after parrying an attack.
 - **Mongoose Bite**: Becomes available after dodging an attack.
 
 
 ### **Paladin**
+![Paladin](https://github.com/wsmaxcy/ProcDoc/blob/main/img/Paladin.png)
 - **Hammer of Wrath**: Becomes available when the target is below 20% health (Turtle WoW addition).
 
 
