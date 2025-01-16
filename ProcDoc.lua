@@ -50,6 +50,7 @@ local PROC_DATA = {
             buffName         = "Shadow Trance",
             texture          = "Interface\\Icons\\Spell_Shadow_Twilight",
             alertTexturePath = "Interface\\AddOns\\ProcDoc\\img\\WarlockShadowTrance.tga",
+            alertStyle       = "SIDES",
         },
     },
     ["MAGE"] = {
@@ -60,14 +61,22 @@ local PROC_DATA = {
             alertStyle       = "TOP",
         },
         {
+            buffName         = "Netherwind Focus",
+            texture          = "Interface\\Icons\\Spell_Shadow_Teleport",
+            alertTexturePath = "Interface\\AddOns\\ProcDoc\\img\\MageT2.tga",
+            alertStyle       = "SIDES2",
+        },
+        {
             buffName         = "Temporal Convergence",
             texture          = "Interface\\Icons\\Spell_Nature_StormReach",
             alertTexturePath = "Interface\\AddOns\\ProcDoc\\img\\MageTemporalConvergence.tga",
+            alertStyle       = "SIDES2",
         },
         {
             buffName         = "Flash Freeze",
             texture          = "Interface\\Icons\\Spell_Fire_FrostResistanceTotem",
             alertTexturePath = "Interface\\AddOns\\ProcDoc\\img\\MageFlashFreeze.tga",
+            alertStyle       = "SIDES",
         },
     },
     ["DRUID"] = {
@@ -81,6 +90,7 @@ local PROC_DATA = {
             buffName         = "Nature's Grace",
             texture          = "Interface\\Icons\\Spell_Nature_NaturesBlessing",
             alertTexturePath = "Interface\\AddOns\\ProcDoc\\img\\DruidNaturesGrace.tga",
+            alertStyle       = "SIDES",
         }
     },
     ["SHAMAN"] = {
@@ -96,6 +106,7 @@ local PROC_DATA = {
             buffName         = "Quick Shots",
             texture          = "Interface\\Icons\\Ability_Warrior_InnerRage",
             alertTexturePath = "Interface\\AddOns\\ProcDoc\\img\\HunterQuickShots.tga",
+            alertStyle       = "SIDES",
         },
     },
     ["WARRIOR"] = {
@@ -103,6 +114,7 @@ local PROC_DATA = {
             buffName         = "Enrage",
             texture          = "Interface\\Icons\\Spell_Shadow_UnholyFrenzy",
             alertTexturePath = "Interface\\AddOns\\ProcDoc\\img\\WarriorEnrage.tga",
+            alertStyle       = "SIDES",
         },
     },
     ["PRIEST"] = {
@@ -110,6 +122,7 @@ local PROC_DATA = {
             buffName         = "Resurgence",
             texture          = "Interface\\Icons\\Spell_Holy_MindVision",
             alertTexturePath = "Interface\\AddOns\\ProcDoc\\img\\PriestResurgence.tga",
+            alertStyle       = "SIDES",
         },
         {
             buffName         = "Enlightened",
@@ -121,6 +134,7 @@ local PROC_DATA = {
             buffName         = "Searing Light",
             texture          = "Interface\\Icons\\Spell_Holy_SearingLightPriest",
             alertTexturePath = "Interface\\AddOns\\ProcDoc\\img\\PriestSearingLight.tga",
+            alertStyle       = "SIDES2",
         },
     },
     ["PALADIN"] = {},
@@ -129,6 +143,7 @@ local PROC_DATA = {
             buffName         = "Remorseless",
             texture          = "Interface\\Icons\\Ability_FiegnDead",
             alertTexturePath = "Interface\\AddOns\\ProcDoc\\img\\RogueRemorseless.tga",
+            alertStyle       = "SIDES",
         },
     },
 }
@@ -155,7 +170,7 @@ local ACTION_PROCS = {
             buffName        = "Execute", 
             texture         = "Interface\\Icons\\inv_sword_48",
             alertTexturePath= "Interface\\AddOns\\ProcDoc\\img\\WarriorExecute.tga",
-            alertStyle      = "TOP",
+            alertStyle      = "SIDES2",
             spellName       = "Execute"
         },
     },
@@ -164,7 +179,7 @@ local ACTION_PROCS = {
             buffName        = "Arcane Surge", 
             texture         = "Interface\\Icons\\INV_Enchant_EssenceMysticalLarge",
             alertTexturePath= "Interface\\AddOns\\ProcDoc\\img\\MageArcaneSurge.tga",
-            alertStyle      = "TOP",
+            alertStyle      = "TOP2",
             spellName       = "Arcane Surge"
         },
     },
@@ -180,7 +195,7 @@ local ACTION_PROCS = {
             buffName        = "Mongoose Bite", 
             texture         = "Interface\\Icons\\Ability_Hunter_Swiftstrike",
             alertTexturePath= "Interface\\AddOns\\ProcDoc\\img\\HunterMongooseBite.tga",
-            alertStyle      = "TOP",
+            alertStyle      = "SIDES2",
             spellName       = "Mongoose Bite"
         },
     },
@@ -212,34 +227,38 @@ local function CreateAlertFrame(style)
     alertObj.pulseAlpha    = minAlpha
     alertObj.pulseDir      = alphaStep
 
-    -- Decide frame size based on style
-    if style == "TOP" then
+    -- Decide frame size and positions based on style
+    if style == "TOP" or style == "TOP2" then
         alertObj.baseWidth  = 256
         alertObj.baseHeight = 128
 
         local tex = ProcDoc:CreateTexture(nil, "OVERLAY")
-        tex:SetPoint("CENTER", UIParent, "CENTER", 0, topOffset)
+        local offsetY = (style == "TOP2") and (topOffset + 50) or topOffset
+        tex:SetPoint("CENTER", UIParent, "CENTER", 0, offsetY)
         tex:SetWidth(alertObj.baseWidth)
         tex:SetHeight(alertObj.baseHeight)
         tex:SetAlpha(0)
         tex:Hide()
         table.insert(alertObj.textures, tex)
-    else
+    elseif style == "SIDES" or style == "SIDES2" then
         alertObj.baseWidth  = 128
         alertObj.baseHeight = 256
 
         local left = ProcDoc:CreateTexture(nil, "OVERLAY")
-        left:SetPoint("CENTER", UIParent, "CENTER", -sideOffset, topOffset - 150)
+        local right = ProcDoc:CreateTexture(nil, "OVERLAY")
+
+        local offsetX = (style == "SIDES2") and (sideOffset + 50) or sideOffset
+        left:SetPoint("CENTER", UIParent, "CENTER", -offsetX, topOffset - 150)
+        right:SetPoint("CENTER", UIParent, "CENTER", offsetX, topOffset - 150)
+
         left:SetWidth(alertObj.baseWidth)
         left:SetHeight(alertObj.baseHeight)
         left:SetAlpha(0)
         left:Hide()
 
-        local right = ProcDoc:CreateTexture(nil, "OVERLAY")
-        right:SetPoint("CENTER", UIParent, "CENTER", sideOffset, topOffset - 150)
         right:SetWidth(alertObj.baseWidth)
         right:SetHeight(alertObj.baseHeight)
-        right:SetTexCoord(1,0,0,1)
+        right:SetTexCoord(1, 0, 0, 1)
         right:SetAlpha(0)
         right:Hide()
 
@@ -249,6 +268,7 @@ local function CreateAlertFrame(style)
 
     return alertObj
 end
+
 
 -- Acquire a frame for either buff-based OR action-based usage
 local function AcquireAlertFrame(style, isActionBased)
@@ -555,47 +575,51 @@ local testProcAlerts = {}
 local function RefreshTestProc()
     for buffName, alertObj in pairs(testProcAlerts) do
         if alertObj.isActive then
-            if alertObj.style == "TOP" then
+            if alertObj.style == "TOP" or alertObj.style == "TOP2" then
                 local tex = alertObj.textures[1]
                 tex:ClearAllPoints()
-                tex:SetPoint("CENTER", UIParent, "CENTER", 0, topOffset)
-            else
+                local offsetY = (alertObj.style == "TOP2") and (topOffset + 50) or topOffset
+                tex:SetPoint("CENTER", UIParent, "CENTER", 0, offsetY)
+            elseif alertObj.style == "SIDES" or alertObj.style == "SIDES2" then
                 local left = alertObj.textures[1]
-                local right= alertObj.textures[2]
+                local right = alertObj.textures[2]
+
+                local offsetX = (alertObj.style == "SIDES2") and (sideOffset + 50) or sideOffset
                 left:ClearAllPoints()
-                left:SetPoint("CENTER", UIParent, "CENTER", -sideOffset, topOffset - 150)
+                left:SetPoint("CENTER", UIParent, "CENTER", -offsetX, topOffset - 150)
+
                 right:ClearAllPoints()
-                right:SetPoint("CENTER", UIParent, "CENTER",  sideOffset, topOffset - 150)
+                right:SetPoint("CENTER", UIParent, "CENTER", offsetX, topOffset - 150)
             end
         end
     end
+
     if testProcActive and testProcAlertObj then
         -- Update base alpha/scale
-        if not minAlpha then minAlpha=0.6 end
-        if not maxAlpha then maxAlpha=1.0 end
-        if not minScale then minScale=0.8 end
-        if not maxScale then maxScale=1.0 end
+        if not minAlpha then minAlpha = 0.6 end
+        if not maxAlpha then maxAlpha = 1.0 end
+        if not minScale then minScale = 0.8 end
+        if not maxScale then maxScale = 1.0 end
 
-        -- Actually move the frames for the test proc
-        -- Because we only anchored them once at creation.
-        if testProcAlertObj.style == "TOP" then
-            -- We only have 1 texture in TOP style
+        -- Re-anchor the test proc based on its style
+        if testProcAlertObj.style == "TOP" or testProcAlertObj.style == "TOP2" then
             local tex = testProcAlertObj.textures[1]
             tex:ClearAllPoints()
-            tex:SetPoint("CENTER", UIParent, "CENTER", 0, topOffset)
-        else
-            -- We have 2 textures for SIDES style
-            local left  = testProcAlertObj.textures[1]
+            local offsetY = (testProcAlertObj.style == "TOP2") and (topOffset + 50) or topOffset
+            tex:SetPoint("CENTER", UIParent, "CENTER", 0, offsetY)
+        elseif testProcAlertObj.style == "SIDES" or testProcAlertObj.style == "SIDES2" then
+            local left = testProcAlertObj.textures[1]
             local right = testProcAlertObj.textures[2]
 
+            local offsetX = (testProcAlertObj.style == "SIDES2") and (sideOffset + 50) or sideOffset
             left:ClearAllPoints()
-            left:SetPoint("CENTER", UIParent, "CENTER", -sideOffset, topOffset - 150)
+            left:SetPoint("CENTER", UIParent, "CENTER", -offsetX, topOffset - 150)
 
             right:ClearAllPoints()
-            right:SetPoint("CENTER", UIParent, "CENTER", sideOffset, topOffset - 150)
+            right:SetPoint("CENTER", UIParent, "CENTER", offsetX, topOffset - 150)
         end
 
-        -- Now apply alpha & size
+        -- Apply alpha & size
         for _, tex in ipairs(testProcAlertObj.textures) do
             tex:SetAlpha(minAlpha)
             tex:SetWidth(testProcAlertObj.baseWidth * minScale)
@@ -605,11 +629,12 @@ local function RefreshTestProc()
 
         -- Reset the pulse animation
         testProcAlertObj.pulseAlpha = minAlpha
-        testProcAlertObj.pulseDir   = alphaStep
+        testProcAlertObj.pulseDir = alphaStep
 
         DEFAULT_CHAT_FRAME:AddMessage("|cFF00FFFF[ProcDoc]|r Test proc refreshed with updated offsets.")
     end
 end
+
 
 
 ------------------------------------------------------------
@@ -645,22 +670,25 @@ local function ShowTestBuffAlert(procInfo)
         testProcAlerts[procInfo.buffName] = alertObj
     end
 
-    -- Now **always** re-anchor them using the current topOffset/sideOffset
-    if style == "TOP" then
+    -- Now re-anchor based on style
+    if style == "TOP" or style == "TOP2" then
         local tex = alertObj.textures[1]
+        local offsetY = (style == "TOP2") and (topOffset + 50) or topOffset
         tex:ClearAllPoints()
-        tex:SetPoint("CENTER", UIParent, "CENTER", 0, topOffset)
-    else
+        tex:SetPoint("CENTER", UIParent, "CENTER", 0, offsetY)
+    elseif style == "SIDES" or style == "SIDES2" then
         local left  = alertObj.textures[1]
         local right = alertObj.textures[2]
 
+        local offsetX = (style == "SIDES2") and (sideOffset + 50) or sideOffset
         left:ClearAllPoints()
-        left:SetPoint("CENTER", UIParent, "CENTER", -sideOffset, topOffset - 150)
+        left:SetPoint("CENTER", UIParent, "CENTER", -offsetX, topOffset - 150)
 
         right:ClearAllPoints()
-        right:SetPoint("CENTER", UIParent, "CENTER",  sideOffset, topOffset - 150)
+        right:SetPoint("CENTER", UIParent, "CENTER", offsetX, topOffset - 150)
     end
 end
+
 
 
 local function HideTestBuffAlert(procInfo)
@@ -780,7 +808,7 @@ local function CreateProcDocOptionsFrame()
                 localText:SetText(string.format("%.2f", value))
             end
 
-            RefreshTestProc()
+            --RefreshTestProc()
         end)
 
         -----------------------------------------------------
@@ -827,7 +855,7 @@ local function CreateProcDocOptionsFrame()
                 localText:SetText(string.format("%.2f", value))
             end
 
-            RefreshTestProc()
+            --RefreshTestProc()
         end)
 
         -----------------------------------------------------
@@ -874,7 +902,7 @@ local function CreateProcDocOptionsFrame()
                 localText:SetText(string.format("%.2f", value))
             end
 
-            RefreshTestProc()
+            --RefreshTestProc()
         end)
 
         -----------------------------------------------------
@@ -921,7 +949,7 @@ local function CreateProcDocOptionsFrame()
                 localText:SetText(string.format("%.2f", value))
             end
 
-            RefreshTestProc()
+            --RefreshTestProc()
         end)
 
         -----------------------------------------------------
@@ -965,25 +993,37 @@ local function CreateProcDocOptionsFrame()
         end)
 
         local function ReanchorAllLiveProcs()
-            for _, alertObj in ipairs(alertFrames) do
-                if alertObj.isActive and not alertObj.isTest then
-                    if alertObj.style == "TOP" then
+            for _, procInfo in ipairs(classProcs) do
+                -- Get the corresponding alert object
+                local alertObj = testProcAlerts[procInfo.buffName]
+                
+                if alertObj and alertObj.isActive then
+                    if procInfo.alertStyle == "TOP" or procInfo.alertStyle == "TOP2" then
                         local tex = alertObj.textures[1]
                         tex:ClearAllPoints()
-                        tex:SetPoint("CENTER", UIParent, "CENTER", 0, topOffset)
-                    else
-                        local left  = alertObj.textures[1]
+                        local offsetY = (procInfo.alertStyle == "TOP2") and (topOffset + 50) or topOffset
+                        tex:SetPoint("CENTER", UIParent, "CENTER", 0, offsetY)
+                    elseif procInfo.alertStyle == "SIDES" or procInfo.alertStyle == "SIDES2" then
+                        local left = alertObj.textures[1]
                         local right = alertObj.textures[2]
-        
+                        
+                        local offsetX = (procInfo.alertStyle == "SIDES2") and (sideOffset + 50) or sideOffset
                         left:ClearAllPoints()
-                        left:SetPoint("CENTER", UIParent, "CENTER", -sideOffset, topOffset - 150)
+                        left:SetPoint("CENTER", UIParent, "CENTER", -offsetX, topOffset - 150)
+                        
                         right:ClearAllPoints()
-                        right:SetPoint("CENTER", UIParent, "CENTER",  sideOffset, topOffset - 150)
+                        right:SetPoint("CENTER", UIParent, "CENTER", offsetX, topOffset - 150)
+                    end
+                else
+                    -- If the proc is inactive, ensure textures are hidden
+                    if alertObj then
+                        for _, tex in ipairs(alertObj.textures) do
+                            tex:Hide()
+                        end
                     end
                 end
             end
         end
-        
 
         ------------------------------------
         -- Top Offset Slider
@@ -1019,7 +1059,7 @@ local function CreateProcDocOptionsFrame()
                 ProcDocDB.globalVars.topOffset = topOffset
             end
             -- If test proc is active, refresh to see new offset
-            RefreshTestProc()
+            --RefreshTestProc()
             ReanchorAllLiveProcs()
         end)
 
@@ -1058,7 +1098,7 @@ local function CreateProcDocOptionsFrame()
             end
 
             -- If test proc is active, refresh to see new offset
-            RefreshTestProc()
+            --RefreshTestProc()
             ReanchorAllLiveProcs()
         end)
 
