@@ -60,6 +60,12 @@ local PROC_DATA = {
             alertStyle       = "TOP",
         },
         {
+            buffName         = "Netherwind Focus",
+            texture          = "Interface\\Icons\\Spell_Shadow_Teleport",
+            alertTexturePath = "Interface\\AddOns\\ProcDoc\\img\\MageT2.tga",
+            alertStyle       = "SIDES",
+        },
+        {
             buffName         = "Temporal Convergence",
             texture          = "Interface\\Icons\\Spell_Nature_StormReach",
             alertTexturePath = "Interface\\AddOns\\ProcDoc\\img\\MageTemporalConvergence.tga",
