@@ -57,7 +57,7 @@ local PROC_DATA = {
         {
             buffName         = "Clearcasting",
             texture          = "Interface\\Icons\\Spell_Shadow_ManaBurn",
-            alertTexturePath = "Interface\\AddOns\\ProcDoc\\img\\MageClearcasting.tga",
+            alertTexturePath = "Interface\\AddOns\\ProcDoc\\img\\DruidClearcasting.tga",
             alertStyle       = "TOP",
         },
         {
@@ -103,7 +103,7 @@ local PROC_DATA = {
         {
             buffName         = "Clearcasting",
             texture          = "Interface\\Icons\\Spell_Shadow_ManaBurn",
-            alertTexturePath = "Interface\\AddOns\\ProcDoc\\img\\ShamanClearcasting.tga",
+            alertTexturePath = "Interface\\AddOns\\ProcDoc\\img\\DruidClearcasting.tga",
             alertStyle       = "TOP",
         },
     },

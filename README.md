@@ -19,13 +19,13 @@
 
 ## Installation
 
-1. **Download or Clone** the **`ProcDoc`** addon folder into your WoW `AddOns` directory.  
-2. Confirm the folder is named **`ProcDoc`** and contains:
-   - `ProcDoc.lua`
-   - `ProcDoc.toc`
-   - An `img` folder with `.tga` (and optional `.png`) images.
-3. **Restart** or **Reload** your WoW client.
-4. (Optional) Type **`/procdoc`** in-game to open the settings/test panel.
+1. **Open Up Turtle-WoW Launcher** and click on the  **`ADDONS`** tab at the top of the window.
+![Click Addons](https://github.com/wsmaxcy/ProcDoc/blob/main/img/Install1.png)
+2.  **At the bottom of the window,** press `+ Add new addon`. A new screen will appear that says `Enter a URL to install the addon from.`
+![Click Add](https://github.com/wsmaxcy/ProcDoc/blob/main/img/Install2.png)
+3. **In the text box,** enter in the web address `https://github.com/wsmaxcy/ProcDoc`. If done correctly, a github repository will appear and you will see a beautiful face appear in the window.
+![Add Repo](https://github.com/wsmaxcy/ProcDoc/blob/main/img/Install3.png)
+4. **Press Install** and you're good to go! Enjoy your proc animations!
 
 ---
 
