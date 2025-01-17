@@ -197,13 +197,6 @@ local ACTION_PROCS = {
             alertStyle      = "TOP",
             spellName       = "Counterattack"
         },
-        {
-            buffName        = "Mongoose Bite", 
-            texture         = "Interface\\Icons\\Ability_Hunter_Swiftstrike",
-            alertTexturePath= "Interface\\AddOns\\ProcDoc\\img\\HunterMongooseBite.tga",
-            alertStyle      = "SIDES2",
-            spellName       = "Mongoose Bite"
-        },
     },
     ["PALADIN"] = {
         {
