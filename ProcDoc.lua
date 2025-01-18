@@ -148,7 +148,14 @@ local PROC_DATA = {
             alertStyle       = "SIDES2",
         },
     },
-    ["PALADIN"] = {},
+    ["PALADIN"] = {
+        {
+            buffName         = "Daybreak",
+            texture          = "Interface\\Icons\\Spell_Holy_AuraMastery",
+            alertTexturePath = "Interface\\AddOns\\ProcDoc\\img\\PaladinDaybreak.tga",
+            alertStyle       = "TOP",
+        },
+    },
     ["ROGUE"] = {
         {
             buffName         = "Remorseless",
