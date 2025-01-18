@@ -6,22 +6,22 @@
 
 -- 1) CREATE A FRAME TO INITIALIZE DB
 local initFrame = CreateFrame("Frame", "ProcDocDBInitFrame", UIParent)
-initFrame:RegisterEvent("ADDON_LOADED")
+initFrame:RegisterEvent("VARIABLES_LOADED")
 
 initFrame:SetScript("OnEvent", function()
-    local e   = event 
-    local a1  = arg1
-
-    if e == "ADDON_LOADED" and a1 == "ProcDoc" then
+    if event == "VARIABLES_LOADED" then
+        -- This is the earliest safe point in 1.12 to read/write saved variables
         if not ProcDocDB then
             ProcDocDB = {}
         end
         if not ProcDocDB.globalVars then
             ProcDocDB.globalVars = {}
         end
+        if not ProcDocDB.procsEnabled then
+            ProcDocDB.procsEnabled = {}
+        end
 
         local gv = ProcDocDB.globalVars
-        
         minAlpha   = gv.minAlpha   or 0.6
         maxAlpha   = gv.maxAlpha   or 1.0
         minScale   = gv.minScale   or 0.8
@@ -30,9 +30,8 @@ initFrame:SetScript("OnEvent", function()
         pulseSpeed = gv.pulseSpeed or 1.0
         topOffset  = gv.topOffset  or 150
         sideOffset = gv.sideOffset or 150
-        
 
-        initFrame:UnregisterEvent("ADDON_LOADED")
+        initFrame:UnregisterEvent("VARIABLES_LOADED")
     end
 end)
 ------------------------------------------------------------
@@ -76,6 +75,12 @@ local PROC_DATA = {
             buffName         = "Flash Freeze",
             texture          = "Interface\\Icons\\Spell_Fire_FrostResistanceTotem",
             alertTexturePath = "Interface\\AddOns\\ProcDoc\\img\\MageFlashFreeze.tga",
+            alertStyle       = "SIDES",
+        },
+        {
+            buffName         = "Arcane Rupture",
+            texture          = "Interface\\Icons\\Spell_Fire_FrostResistanceTotem",
+            alertTexturePath = "Interface\\AddOns\\ProcDoc\\img\\MageArcaneRupture.tga",
             alertStyle       = "SIDES",
         },
     },
@@ -371,12 +376,15 @@ local function CheckProcs()
             GameTooltip:Hide()
 
             for _, procInfo in ipairs(normalProcs) do
-                if (buffTexture == procInfo.texture)
-                   and (buffName == procInfo.buffName)
-                then
-                    table.insert(activeBuffProcs, procInfo)
+                -- only proceed if this is enabled
+                if ProcDocDB.procsEnabled[procInfo.buffName] ~= false then
+                    if (buffTexture == procInfo.texture)
+                       and (buffName == procInfo.buffName)
+                    then
+                        table.insert(activeBuffProcs, procInfo)
+                    end
                 end
-            end
+            end            
         end
     end
 
@@ -496,19 +504,17 @@ end
 
 local function CheckAllActionProcs()
     for _, actionProc in ipairs(actionProcs) do
-        FindActionSlotAndCheck(actionProc)
-    end
-end
-
-local function OnSpellcastSucceeded(arg1, arg2)
-    print("|cffffff00[DEBUG]|r OnSpellcastSucceeded => "..tostring(arg1).." => "..tostring(arg2))
-    for _, actionProc in ipairs(actionProcs) do
-        if arg1 == "player" and (arg2 == actionProc.spellName) then
-            print("|cffffff00[DEBUG]|r  => Hiding after cast for "..arg2)
+        -- skip if disabled
+        if ProcDocDB.procsEnabled[actionProc.buffName] ~= false then
+            FindActionSlotAndCheck(actionProc)
+        else
+            -- if it's currently active, hide it
             HideActionProcAlert(actionProc)
         end
     end
 end
+
+
 
 ------------------------------------------------------------
 --7) The event frame for action-based procs
@@ -705,11 +711,20 @@ end
 -- 11) CREATE OPTIONS UI
 ------------------------------------------------------------
 local function CreateProcDocOptionsFrame()
+
+
+    -- Safety: Make sure we have procsEnabled
+    if not ProcDocDB then
+        ProcDocDB = {}
+    end
+    if not ProcDocDB.procsEnabled then
+        ProcDocDB.procsEnabled = {}
+    end
     
     if not ProcDocOptionsFrame then
         local f = CreateFrame("Frame", "ProcDocOptionsFrame", UIParent)
         f:SetWidth(340)
-        f:SetHeight(700)
+        f:SetHeight(730)
         f:SetPoint("CENTER", UIParent, "CENTER", -360, 0)
         f:SetBackdrop({
             bgFile   = "Interface\\DialogFrame\\UI-DialogBox-Background",
@@ -729,7 +744,7 @@ local function CreateProcDocOptionsFrame()
          -- SECTION FRAME
          local sectionFrame = CreateFrame("Frame", nil, f)
          sectionFrame:SetPoint("TOPLEFT", f, "TOPLEFT", 15, -30)
-         sectionFrame:SetPoint("BOTTOMRIGHT", f, "BOTTOMRIGHT", -15, 245)
+         sectionFrame:SetPoint("BOTTOMRIGHT", f, "BOTTOMRIGHT", -15, 275)
          sectionFrame:SetBackdrop({
              bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
              edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
@@ -1110,7 +1125,7 @@ local function CreateProcDocOptionsFrame()
         -----------------------------------------------------
         local testLabel = f:CreateFontString(nil, "OVERLAY", "GameFontNormal")
         testLabel:SetPoint("TOPLEFT", 20, -460)
-        testLabel:SetText("|cffffffffTest Buffs for " .. (UnitClass("player")) .. "|r")
+        testLabel:SetText("|cffffffffBuffs to Show for " .. (UnitClass("player")) .. "|r")
 
          -- SECTION FRAME
         local sectionFrame2 = CreateFrame("Frame", nil, f)
@@ -1144,16 +1159,38 @@ local function CreateProcDocOptionsFrame()
             label:SetPoint("LEFT", check, "RIGHT", 4, 0)
             label:SetText(procInfo.buffName)
         
-            -- Save this checkbox for later access
-            checkBoxes[procInfo.buffName] = check
+            -- Make a local copy so each OnClick has its own reference
+            local localProcInfo = procInfo
         
-            -- If you want immediate toggling on click, do that here, or do nothing.
+            ----------------------------------------------------------------------------
+            -- HERE is the important line: put the newly created check in the checkBoxes table
+            ----------------------------------------------------------------------------
+            checkBoxes[localProcInfo.buffName] = check
+        
+            -- Set up the OnClick
             check:SetScript("OnClick", function()
-                -- optional immediate logic, or do nothing
+                local bName = localProcInfo.buffName
+        
+                local isChecked = check:GetChecked()
+                if not bName then
+                    return
+                end
+                
+                if isChecked then
+                    ProcDocDB.procsEnabled[bName] = true
+                else
+                    ProcDocDB.procsEnabled[bName] = false
+                end
             end)
+        
+            -- Default to checked if not disabled
+            local isEnabled = (ProcDocDB.procsEnabled[procInfo.buffName] ~= false)
+            check:SetChecked(isEnabled)
         
             yOffset = yOffset - 28
         end
+        
+        
 
         -------------------------------------------------------------
         -- Modify your existing "Test Proc" button:
@@ -1166,14 +1203,11 @@ local function CreateProcDocOptionsFrame()
 
         -- Replace old logic with:
         testButton:SetScript("OnClick", function()
-            -- For each proc in classProcs:
             for _, procInfo in ipairs(classProcs) do
                 local c = checkBoxes[procInfo.buffName]
                 if c and c:GetChecked() then
-                    -- Show this buff's test alert (spawn logic)
                     ShowTestBuffAlert(procInfo)
                 else
-                    -- Hide it if not checked
                     HideTestBuffAlert(procInfo)
                 end
             end
