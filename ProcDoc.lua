@@ -79,7 +79,7 @@ local PROC_DATA = {
         },
         {
             buffName         = "Arcane Rupture",
-            texture          = "Interface\\Icons\\Spell_Fire_FrostResistanceTotem",
+            texture          = "Interface\\Icons\\Spell_Arcane_Blast",
             alertTexturePath = "Interface\\AddOns\\ProcDoc\\img\\MageArcaneRupture.tga",
             alertStyle       = "SIDES",
         },
