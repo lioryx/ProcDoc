@@ -755,7 +755,7 @@ local function CreateProcDocOptionsFrame()
     if not ProcDocOptionsFrame then
         local f = CreateFrame("Frame", "ProcDocOptionsFrame", UIParent)
         f:SetWidth(340)
-        f:SetHeight(730)
+        f:SetHeight(780)
         f:SetPoint("CENTER", UIParent, "CENTER", -360, 0)
         f:SetBackdrop({
             bgFile   = "Interface\\DialogFrame\\UI-DialogBox-Background",
@@ -775,7 +775,7 @@ local function CreateProcDocOptionsFrame()
          -- SECTION FRAME
          local sectionFrame = CreateFrame("Frame", nil, f)
          sectionFrame:SetPoint("TOPLEFT", f, "TOPLEFT", 15, -30)
-         sectionFrame:SetPoint("BOTTOMRIGHT", f, "BOTTOMRIGHT", -15, 275)
+         sectionFrame:SetPoint("BOTTOMRIGHT", f, "BOTTOMRIGHT", -15, 300)
          sectionFrame:SetBackdrop({
              bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
              edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
@@ -1155,12 +1155,12 @@ local function CreateProcDocOptionsFrame()
         -- PER-BUFF CHECKBOXES
         -----------------------------------------------------
         local testLabel = f:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-        testLabel:SetPoint("TOPLEFT", 20, -460)
+        testLabel:SetPoint("TOPLEFT", 20, -485)
         testLabel:SetText("|cffffffffBuffs to Show for " .. (UnitClass("player")) .. "|r")
 
          -- SECTION FRAME
         local sectionFrame2 = CreateFrame("Frame", nil, f)
-        sectionFrame2:SetPoint("TOPLEFT", f, "TOPLEFT", 15, -475)
+        sectionFrame2:SetPoint("TOPLEFT", f, "TOPLEFT", 15, -500)
         sectionFrame2:SetPoint("BOTTOMRIGHT", f, "BOTTOMRIGHT", -15, 80)
         sectionFrame2:SetBackdrop({
             bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
@@ -1171,7 +1171,7 @@ local function CreateProcDocOptionsFrame()
         sectionFrame2:SetBackdropColor(0.2, 0.2, 0.2, 1)
         sectionFrame2:SetBackdropBorderColor(0.5, 0.5, 0.5, 1)
 
-        local yOffset = -480
+        local yOffset = -505
         -------------------------------------------------------------
         -- A table to hold references to each buff's checkbox
         -------------------------------------------------------------
