@@ -103,6 +103,30 @@ local PROC_DATA = {
             alertTexturePath = "Interface\\AddOns\\ProcDoc\\img\\HunterMongooseBite.tga",
             alertStyle       = "SIDES2",
         },
+        {
+            buffName         = "Astral Boon",
+            texture          = "Interface\\Icons\\Spell_Nature_Wispsplode",
+            alertTexturePath = "Interface\\AddOns\\ProcDoc\\img\\DruidAstralBoon.tga",
+            alertStyle       = "TOP2",
+        },
+        {
+            buffName         = "Natural Boon",
+            texture          = "Interface\\Icons\\Spell_Nature_AbolishMagic",
+            alertTexturePath = "Interface\\AddOns\\ProcDoc\\img\\DruidNaturalBoon.tga",
+            alertStyle       = "TOP2",
+        },
+        {
+            buffName         = "Arcane Eclipse",
+            texture          = "Interface\\Icons\\Spell_Nature_Wispsplode",
+            alertTexturePath = "Interface\\AddOns\\ProcDoc\\img\\DruidArcaneEclipse.tga",
+            alertStyle       = "SIDES2",
+        },
+        {
+            buffName         = "Nature Eclipse",
+            texture          = "Interface\\Icons\\Spell_Nature_AbolishMagic",
+            alertTexturePath = "Interface\\AddOns\\ProcDoc\\img\\DruidNatureEclipse.tga",
+            alertStyle       = "SIDES2",
+        },
     },
     ["SHAMAN"] = {
         {
