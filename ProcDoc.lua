@@ -203,7 +203,7 @@ local ACTION_PROCS = {
             buffName        = "Surprise Attack",  
             texture         = "Interface\\Icons\\Ability_Rogue_SurpriseAttack",
             alertTexturePath= "Interface\\AddOns\\ProcDoc\\img\\RogueSuddenDeath.tga",
-            alertStyle      = "SIDES",
+            alertStyle      = "SIDES2",
             spellName       = "Surprise Attack"
         },
     },
