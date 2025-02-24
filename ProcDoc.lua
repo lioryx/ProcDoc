@@ -105,7 +105,7 @@ local PROC_DATA = {
         },
         {
             buffName         = "Astral Boon",
-            texture          = "Interface\\Icons\\Spell_Nature_Wispsplode",
+            texture          = "Interface\\Icons\\Spell_Arcane_StarFire",
             alertTexturePath = "Interface\\AddOns\\ProcDoc\\img\\DruidAstralBoon.tga",
             alertStyle       = "TOP2",
         },
@@ -117,7 +117,7 @@ local PROC_DATA = {
         },
         {
             buffName         = "Arcane Eclipse",
-            texture          = "Interface\\Icons\\Spell_Nature_Wispsplode",
+            texture          = "Interface\\Icons\\Spell_Nature_WispSplode",
             alertTexturePath = "Interface\\AddOns\\ProcDoc\\img\\DruidArcaneEclipse.tga",
             alertStyle       = "SIDES2",
         },
