@@ -395,14 +395,14 @@ for _, q in ipairs(actionProcs) do
 end
 
 ----------------------------------------------------------------
--- 5) BUFF-BASED DETECTION
+-- BUFF-BASED DETECTION
 ----------------------------------------------------------------
 
+-- Holds which buff names we’ve already played a sound for.
 local knownBuffProcs = {}
 
-
 local function CheckProcs()
-    -- 1) Hide only the normal (buff-based) frames first
+    -- 1) Hide any old (buff-based) frames first
     for _, alertObj in ipairs(alertFrames) do
         if (not alertObj.isActionBased) then
             alertObj.isActive = false
@@ -412,8 +412,10 @@ local function CheckProcs()
         end
     end
 
-    -- 2) Gather which buff-based procs are active
+    -- 2) Gather a list of all currently active buff-based procs
     local activeBuffProcs = {}
+    local activeBuffNames = {}  -- just the names, for quick “did it fall off?” checks
+
     for i = 0, 31 do
         local buffTexture = GetPlayerBuffTexture(i)
         if buffTexture then
@@ -426,18 +428,16 @@ local function CheckProcs()
                 if ProcDocDB.procsEnabled[procInfo.buffName] ~= false then
                     if (buffTexture == procInfo.texture) and (buffName == procInfo.buffName) then
                         table.insert(activeBuffProcs, procInfo)
+                        activeBuffNames[procInfo.buffName] = true
                     end
                 end
             end
         end
     end
 
-    -- 3) Build a table of buffNames that are now active
-    local newlyActiveNames = {}
-    local activeBuffNames = {}
-
+    -- 3) Show frames for each active buff
     for _, procInfo in ipairs(activeBuffProcs) do
-        local style = procInfo.alertStyle or "SIDES"
+        local style   = procInfo.alertStyle or "SIDES"
         local alertObj = AcquireAlertFrame(style, false)
         alertObj.isActive   = true
         alertObj.pulseAlpha = minAlpha
@@ -449,31 +449,24 @@ local function CheckProcs()
             tex:Show()
         end
 
+        -- 4) If this is a newly gained buff, play the sound (if not muted).
         local bName = procInfo.buffName
-        activeBuffNames[bName] = true  -- Mark it as active this pass
-
-        -- **Only play the sound if it's NOT already in knownBuffProcs**
         if not knownBuffProcs[bName] then
             if not ProcDocDB.globalVars.isMuted then
                 PlaySoundFile("Interface\\AddOns\\ProcDoc\\img\\SpellAlert.ogg")
             end
-            newlyActiveNames[bName] = true
+            knownBuffProcs[bName] = true
         end
     end
 
-    -- 4) Update knownBuffProcs:
-    --     - Add new buff names that we just recognized
-    for bName in pairs(newlyActiveNames) do
-        knownBuffProcs[bName] = true
-    end
-
-    --     - Remove any buff that fell off
+    -- 5) Remove any old buff from knownBuffProcs that has fallen off
     for bName in pairs(knownBuffProcs) do
         if not activeBuffNames[bName] then
             knownBuffProcs[bName] = nil
         end
     end
 end
+
 
 
 
