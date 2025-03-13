@@ -10,7 +10,6 @@ initFrame:RegisterEvent("VARIABLES_LOADED")
 
 initFrame:SetScript("OnEvent", function()
     if event == "VARIABLES_LOADED" then
-        -- This is the earliest safe point in 1.12 to read/write saved variables
         if not ProcDocDB then
             ProcDocDB = {}
         end
@@ -20,7 +19,12 @@ initFrame:SetScript("OnEvent", function()
         if not ProcDocDB.procsEnabled then
             ProcDocDB.procsEnabled = {}
         end
-
+    
+        -- Add this line:
+        if ProcDocDB.globalVars.isMuted == nil then
+            ProcDocDB.globalVars.isMuted = false
+        end
+    
         local gv = ProcDocDB.globalVars
         minAlpha   = gv.minAlpha   or 0.6
         maxAlpha   = gv.maxAlpha   or 1.0
@@ -30,10 +34,11 @@ initFrame:SetScript("OnEvent", function()
         pulseSpeed = gv.pulseSpeed or 1.0
         topOffset  = gv.topOffset  or 150
         sideOffset = gv.sideOffset or 150
-
+    
         initFrame:UnregisterEvent("VARIABLES_LOADED")
     end
 end)
+    
 ------------------------------------------------------------
 -- 1) MAIN ADDON FRAME
 ------------------------------------------------------------
@@ -392,9 +397,12 @@ end
 ----------------------------------------------------------------
 -- 5) BUFF-BASED DETECTION
 ----------------------------------------------------------------
+
+local knownBuffProcs = {}
+
+
 local function CheckProcs()
-    -- Hide only the normal (buff-based) frames first
-    -- i.e. only frames that are `not isActionBased`.
+    -- 1) Hide only the normal (buff-based) frames first
     for _, alertObj in ipairs(alertFrames) do
         if (not alertObj.isActionBased) then
             alertObj.isActive = false
@@ -404,6 +412,7 @@ local function CheckProcs()
         end
     end
 
+    -- 2) Gather which buff-based procs are active
     local activeBuffProcs = {}
     for i = 0, 31 do
         local buffTexture = GetPlayerBuffTexture(i)
@@ -414,21 +423,22 @@ local function CheckProcs()
             GameTooltip:Hide()
 
             for _, procInfo in ipairs(normalProcs) do
-                -- only proceed if this is enabled
                 if ProcDocDB.procsEnabled[procInfo.buffName] ~= false then
-                    if (buffTexture == procInfo.texture)
-                       and (buffName == procInfo.buffName)
-                    then
+                    if (buffTexture == procInfo.texture) and (buffName == procInfo.buffName) then
                         table.insert(activeBuffProcs, procInfo)
                     end
                 end
-            end            
+            end
         end
     end
 
+    -- 3) Build a table of buffNames that are now active
+    local newlyActiveNames = {}
+    local activeBuffNames = {}
+
     for _, procInfo in ipairs(activeBuffProcs) do
         local style = procInfo.alertStyle or "SIDES"
-        local alertObj = AcquireAlertFrame(style, false)  
+        local alertObj = AcquireAlertFrame(style, false)
         alertObj.isActive   = true
         alertObj.pulseAlpha = minAlpha
         alertObj.pulseDir   = alphaStep
@@ -438,8 +448,33 @@ local function CheckProcs()
             tex:SetTexture(path)
             tex:Show()
         end
+
+        local bName = procInfo.buffName
+        activeBuffNames[bName] = true  -- Mark it as active this pass
+
+        -- **Only play the sound if it's NOT already in knownBuffProcs**
+        if not knownBuffProcs[bName] then
+            if not ProcDocDB.globalVars.isMuted then
+                PlaySoundFile("Interface\\AddOns\\ProcDoc\\img\\SpellAlert.ogg")
+            end
+            newlyActiveNames[bName] = true
+        end
+    end
+
+    -- 4) Update knownBuffProcs:
+    --     - Add new buff names that we just recognized
+    for bName in pairs(newlyActiveNames) do
+        knownBuffProcs[bName] = true
+    end
+
+    --     - Remove any buff that fell off
+    for bName in pairs(knownBuffProcs) do
+        if not activeBuffNames[bName] then
+            knownBuffProcs[bName] = nil
+        end
     end
 end
+
 
 
 ----------------------------------------------------------------
@@ -473,8 +508,13 @@ local function ShowActionProcAlert(actionProc)
             tex:Show()
         end
 
+        if not ProcDocDB.globalVars.isMuted then
+            PlaySoundFile("Interface\\AddOns\\ProcDoc\\img\\SpellAlert.ogg")
+        end
+
         state.alertObj = alertObj
     end
+
     state.isActive = true
 end
 
@@ -1315,6 +1355,22 @@ end
 -- 12) SLASH COMMAND
 ------------------------------------------------------------
 SLASH_PROCDOC1 = "/procdoc"
-SlashCmdList["PROCDOC"] = function()
-    CreateProcDocOptionsFrame()
+SlashCmdList["PROCDOC"] = function(msg)
+    local cmd = string.lower(msg or "")
+
+    if cmd == "mute" then
+        ProcDocDB.globalVars.isMuted = true
+        DEFAULT_CHAT_FRAME:AddMessage("|cff00ffffProcDoc|r: Sounds are now muted.")
+    
+    elseif cmd == "unmute" then
+        ProcDocDB.globalVars.isMuted = false
+        DEFAULT_CHAT_FRAME:AddMessage("|cff00ffffProcDoc|r: Sounds are now unmuted.")
+    
+    else
+        -- If no or unknown argument, show the options frame
+        CreateProcDocOptionsFrame()
+        DEFAULT_CHAT_FRAME:AddMessage("|cff00ffffProcDoc|r Options opened. " ..
+          "Use '/procdoc mute' or '/procdoc unmute' to toggle sounds.")
+    end
 end
+
