@@ -227,6 +227,20 @@ local ACTION_PROCS = {
             alertStyle      = "SIDES2",
             spellName       = "Execute"
         },
+        {
+            buffName        = "Counterattack",
+            texture         = "Interface\\Icons\\Ability_Warrior_Riposte",
+            alertTexturePath= "Interface\\AddOns\\ProcDoc\\img\\WarriorCounterattack.tga",
+            alertStyle      = "SIDES",
+            spellName       = "Counterattack"
+        },
+        {
+            buffName       = "Revenge",
+            texture         = "Interface\\Icons\\Ability_Warrior_Revenge",
+            alertTexturePath= "Interface\\AddOns\\ProcDoc\\img\\WarriorRevenge.tga",
+            alertStyle      = "SIDES2",
+            spellName       = "Revenge"
+        }
     },
     ["MAGE"] = {
         {
