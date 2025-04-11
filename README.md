@@ -46,7 +46,7 @@
 - **Min/Max Size**: Changes how small or large the images become during pulsing.
 - **Pulse Speed**: Adjusts how quickly the images fade in/out.
 - **Offsets**: Shifts the alerts vertically (top) or horizontally (sides).
-
+- **Sound Alerts**: Comes with a sound alert that will trigger when any proc is activated. Can be muted in the menu. This is tied to the `Master` volume, so if you would like to change the volume of the alert, use that slider.
 You can experiment with these in the **`/procdoc`** panel. Changes are saved automatically.
 
 ![Configuration](https://github.com/wsmaxcy/ProcDoc/blob/main/img/Config.png)
@@ -59,61 +59,70 @@ ProcDoc supports a variety of procs and alerts when key abilities or buffs becom
 
 ### **Warlock**
 ![Warlock](https://github.com/wsmaxcy/ProcDoc/blob/main/img/Warlock.png)
-- **Shadow Trance**: Procs from Nightfall, allowing an instant Shadow Bolt cast.
+- **Shadow Trance**
 
 
 ### **Mage**
 ![Mage](https://github.com/wsmaxcy/ProcDoc/blob/main/img/Mage.png)
-- **Clearcasting**: Grants a free spell cast (Arcane Concentration proc).
-- **Netherwind Focus**: Part of the Netherwind set bonus, increases spell efficiency.
-- **Temporal Convergence**: Unique Mage buff (custom to Turtle WoW).
-- **Flash Freeze**: Enhances Frost-based spells (custom to Turtle WoW).
-- **Arcane Surge**: Boosts Arcane damage (custom to Turtle WoW).
+- **Clearcasting**
+- **Netherwind Focus**
+- **Temporal Convergence**
+- **Flash Freeze**
+- **Arcane Surge**
+- **Arcane Rupture**
 
 
 ### **Warrior**
 ![Warrior](https://github.com/wsmaxcy/ProcDoc/blob/main/img/Warrior.png)
-- **Enrage**: Triggered after being critically hit, increases physical damage.
-- **Overpower**: Becomes available after the target dodges.
-- **Execute**: Becomes available when the target's health drops below 20% (25% with talents).
+- **Enrage**
+- **Overpower**
+- **Execute**
+- **Revenge**
+- **Counterattack**
 
 
 ### **Druid**
 ![Druid](https://github.com/wsmaxcy/ProcDoc/blob/main/img/Druid.png)
-- **Clearcasting**: Grants a free attack or spell (Omen of Clarity proc).
-- **Nature’s Grace**: Reduces the cast time of the next spell after landing a critical hit.
+- **Clearcasting**
+- **Nature’s Grace**
+- **Tiger's Fury**
+- **Astral Boon**
+- **Natural Boon**
+- **Arcane Eclipse**
+- **Nature Eclipse**
 
 
 ### **Rogue**
 ![Rogue](https://github.com/wsmaxcy/ProcDoc/blob/main/img/Rogue.png)
 
-- **Remorseless**: Increases critical strike chance after killing an enemy.
-- **Riposte**: Becomes available after parrying an attack.
+- **Remorseless**
+- **Riposte**
+- **Surprise Attack**
 
 
 ### **Shaman**
 ![Shaman](https://github.com/wsmaxcy/ProcDoc/blob/main/img/Shaman.png)
 
-- **Clearcasting**: Grants a free spell cast (via Elemental Focus talent).
+- **Clearcasting**
 
 
 ### **Priest**
 ![Priest](https://github.com/wsmaxcy/ProcDoc/blob/main/img/Priest.png)
-- **Resurgence**: Unique Priest proc (custom to Turtle WoW).
-- **Enlightened**: Provides a temporary boost to abilities (custom to Turtle WoW).
-- **Searing Light**: Increases damage for specific spells (custom to Turtle WoW).
+- **Resurgence**
+- **Enlightened**
+- **Searing Light**
 
 
 ### **Hunter**
 ![Hunter](https://github.com/wsmaxcy/ProcDoc/blob/main/img/Hunter.png)
-- **Quick Shots**: Increases attack speed (via Improved Aspect of the Hawk talent).
-- **Counterattack**: Becomes available after parrying an attack.
-- **Mongoose Bite**: Becomes available after dodging an attack.
+- **Quick Shots**
+- **Counterattack**
+- **Mongoose Bite**
 
 
 ### **Paladin**
 ![Paladin](https://github.com/wsmaxcy/ProcDoc/blob/main/img/Paladin.png)
-- **Hammer of Wrath**: Becomes available when the target is below 20% health (Turtle WoW addition).
+- **Hammer of Wrath**
 
 
 ### Additional Notes

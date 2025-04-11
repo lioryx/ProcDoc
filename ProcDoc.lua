@@ -24,6 +24,10 @@ initFrame:SetScript("OnEvent", function()
         if ProcDocDB.globalVars.isMuted == nil then
             ProcDocDB.globalVars.isMuted = false
         end
+        if ProcDocDB.globalVars.soundVolume == nil then
+            ProcDocDB.globalVars.soundVolume = 1.0
+        end
+        
     
         local gv = ProcDocDB.globalVars
         minAlpha   = gv.minAlpha   or 0.6
@@ -347,6 +351,28 @@ local function AcquireAlertFrame(style, isActionBased)
     return newAlert
 end
 
+--------------------------------------------
+-- HELPER: Play proc sound with user volume
+--------------------------------------------
+local function ProcDoc_PlayAlertSound()
+    if ProcDocDB.globalVars.isMuted then
+        return
+    end
+
+    local desiredVolume = ProcDocDB.globalVars.soundVolume or 1.0
+    if desiredVolume < 0 then desiredVolume = 0 end
+    if desiredVolume > 1 then desiredVolume = 1 end
+
+    local oldVolume = GetCVar("SoundVolume")
+    SetCVar("SoundVolume", tostring(desiredVolume))
+
+    PlaySoundFile("Interface\\AddOns\\ProcDoc\\img\\SpellAlert.ogg", "SFX")
+
+    -- Immediately restore
+    SetCVar("SoundVolume", oldVolume)
+end
+
+
 ----------------------------------------------------------------
 -- 4) ONUPDATE PULSE
 ----------------------------------------------------------------
@@ -467,7 +493,7 @@ local function CheckProcs()
         local bName = procInfo.buffName
         if not knownBuffProcs[bName] then
             if not ProcDocDB.globalVars.isMuted then
-                PlaySoundFile("Interface\\AddOns\\ProcDoc\\img\\SpellAlert.ogg")
+                ProcDoc_PlayAlertSound()
             end
             knownBuffProcs[bName] = true
         end
@@ -516,7 +542,7 @@ local function ShowActionProcAlert(actionProc)
         end
 
         if not ProcDocDB.globalVars.isMuted then
-            PlaySoundFile("Interface\\AddOns\\ProcDoc\\img\\SpellAlert.ogg")
+            ProcDoc_PlayAlertSound()
         end
 
         state.alertObj = alertObj
@@ -809,7 +835,7 @@ local function CreateProcDocOptionsFrame()
     if not ProcDocOptionsFrame then
         local f = CreateFrame("Frame", "ProcDocOptionsFrame", UIParent)
         f:SetWidth(340)
-        f:SetHeight(780)
+        f:SetHeight(775)
         f:SetPoint("CENTER", UIParent, "CENTER", -360, 0)
         f:SetBackdrop({
             bgFile   = "Interface\\DialogFrame\\UI-DialogBox-Background",
@@ -1206,15 +1232,41 @@ local function CreateProcDocOptionsFrame()
         end)
 
         -----------------------------------------------------
+        -- MUTE CHECKBOX
+        -----------------------------------------------------
+        local muteCheck = CreateFrame("CheckButton", nil, f, "UICheckButtonTemplate")
+        muteCheck:SetPoint("TOPLEFT", f, "TOPLEFT", 20, -445) 
+        muteCheck:SetWidth(24)
+        muteCheck:SetHeight(24)
+
+        local muteLabel = muteCheck:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+        muteLabel:SetPoint("LEFT", muteCheck, "RIGHT", 4, 0)
+        muteLabel:SetText("Mute All Proc Sounds")
+
+        -- Initialize check mark based on DB:
+        muteCheck:SetChecked(ProcDocDB.globalVars.isMuted)
+
+        muteCheck:SetScript("OnClick", function()
+            if muteCheck:GetChecked() then
+                ProcDocDB.globalVars.isMuted = true
+                DEFAULT_CHAT_FRAME:AddMessage("|cFF00FFFFProcDoc|r: Sounds are now muted.")
+            else
+                ProcDocDB.globalVars.isMuted = false
+                DEFAULT_CHAT_FRAME:AddMessage("|cFF00FFFFProcDoc|r: Sounds are now unmuted.")
+            end
+        end)
+
+
+        -----------------------------------------------------
         -- PER-BUFF CHECKBOXES
         -----------------------------------------------------
         local testLabel = f:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-        testLabel:SetPoint("TOPLEFT", 20, -485)
+        testLabel:SetPoint("TOPLEFT", 20, -480)
         testLabel:SetText("|cffffffffBuffs to Show for " .. (UnitClass("player")) .. "|r")
 
          -- SECTION FRAME
         local sectionFrame2 = CreateFrame("Frame", nil, f)
-        sectionFrame2:SetPoint("TOPLEFT", f, "TOPLEFT", 15, -500)
+        sectionFrame2:SetPoint("TOPLEFT", f, "TOPLEFT", 15, -495)
         sectionFrame2:SetPoint("BOTTOMRIGHT", f, "BOTTOMRIGHT", -15, 80)
         sectionFrame2:SetBackdrop({
             bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
@@ -1225,7 +1277,7 @@ local function CreateProcDocOptionsFrame()
         sectionFrame2:SetBackdropColor(0.2, 0.2, 0.2, 1)
         sectionFrame2:SetBackdropBorderColor(0.5, 0.5, 0.5, 1)
 
-        local yOffset = -505
+        local yOffset = -500
         -------------------------------------------------------------
         -- A table to hold references to each buff's checkbox
         -------------------------------------------------------------
@@ -1355,8 +1407,8 @@ local function CreateProcDocOptionsFrame()
 
     ProcDocOptionsFrame:Show()
     
-    
 end
+
 
 ------------------------------------------------------------
 -- 12) SLASH COMMAND
@@ -1365,19 +1417,8 @@ SLASH_PROCDOC1 = "/procdoc"
 SlashCmdList["PROCDOC"] = function(msg)
     local cmd = string.lower(msg or "")
 
-    if cmd == "mute" then
-        ProcDocDB.globalVars.isMuted = true
-        DEFAULT_CHAT_FRAME:AddMessage("|cff00ffffProcDoc|r: Sounds are now muted.")
+    CreateProcDocOptionsFrame()
+    DEFAULT_CHAT_FRAME:AddMessage("|cff00ffffProcDoc|r Options opened. ")
     
-    elseif cmd == "unmute" then
-        ProcDocDB.globalVars.isMuted = false
-        DEFAULT_CHAT_FRAME:AddMessage("|cff00ffffProcDoc|r: Sounds are now unmuted.")
-    
-    else
-        -- If no or unknown argument, show the options frame
-        CreateProcDocOptionsFrame()
-        DEFAULT_CHAT_FRAME:AddMessage("|cff00ffffProcDoc|r Options opened. " ..
-          "Use '/procdoc mute' or '/procdoc unmute' to toggle sounds.")
-    end
 end
 
