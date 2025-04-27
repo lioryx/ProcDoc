@@ -152,7 +152,7 @@ local PROC_DATA = {
         },
         {
             buffName         = "Stormstrike",
-            texture          = "Interface\\Icons\\Ability_Shaman_Stormstrike",
+            texture          = "Interface\\Icons\\Ability_Shaman_StormStrike",
             alertTexturePath = "Interface\\AddOns\\ProcDoc\\img\\ShamanStormstrike.tga",
             alertStyle       = "TOP2",
         },
