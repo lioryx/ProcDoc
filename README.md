@@ -104,6 +104,9 @@ ProcDoc supports a variety of procs and alerts when key abilities or buffs becom
 ![Shaman](https://github.com/wsmaxcy/ProcDoc/blob/main/img/Shaman.png)
 
 - **Clearcasting**
+- **Nature's Swiftness**
+- **Stormstrike**
+- **Flurry**
 
 
 ### **Priest**

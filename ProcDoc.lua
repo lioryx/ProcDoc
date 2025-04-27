@@ -144,6 +144,24 @@ local PROC_DATA = {
             alertTexturePath = "Interface\\AddOns\\ProcDoc\\img\\DruidClearcasting.tga",
             alertStyle       = "TOP",
         },
+        {
+            buffName         = "Nature's Swiftness",
+            texture          = "Interface\\Icons\\Spell_Nature_RavenForm",
+            alertTexturePath = "Interface\\AddOns\\ProcDoc\\img\\DruidNaturesGrace.tga",
+            alertStyle       = "SIDES",
+        },
+        {
+            buffName         = "Stormstrike",
+            texture          = "Interface\\Icons\\Spell_Nature_Stormstrike",
+            alertTexturePath = "Interface\\AddOns\\ProcDoc\\img\\ShamanStormstrike.tga",
+            alertStyle       = "TOP2",
+        },
+        {
+            buffName         = "Flurry",
+            texture          = "Interface\\Icons\\Ability_GhoulFrenzy",
+            alertTexturePath = "Interface\\AddOns\\ProcDoc\\img\\HunterMongooseBite.tga",
+            alertStyle       = "SIDES2",
+        },
     },
     ["HUNTER"] = {
         {
