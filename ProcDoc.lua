@@ -202,13 +202,13 @@ local PROC_DATA = {
             buffName         = "Shadow Veil",
             texture          = "Interface\\Icons\\Spell_Shadow_GatherShadows",
             alertTexturePath = "Interface\\AddOns\\ProcDoc\\img\\PriestShadowVeil.tga",
-            alertStyle       = "SIDES2",
+            alertStyle       = "SIDES",
         },
         {
             buffName         = "Spell Blasting",
             texture          = "Interface\\Icons\\Spell_Lightning_LightningBolt01",
             alertTexturePath = "Interface\\AddOns\\ProcDoc\\img\\PriestSpellBlasting.tga",
-            alertStyle       = "TOP",
+            alertStyle       = "TOP2",
         },
     },
     ["PALADIN"] = {
