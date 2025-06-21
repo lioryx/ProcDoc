@@ -60,18 +60,6 @@ local PROC_DATA = {
             alertTexturePath = "Interface\\AddOns\\ProcDoc\\img\\WarlockShadowTrance.tga",
             alertStyle       = "SIDES",
         },
-	    {
-            buffName         = "Shadow Veil",
-            texture          = "Interface\\Icons\\Spell_Shadow_GatherShadows",
-            alertTexturePath = "Interface\\AddOns\\ProcDoc\\img\\WarlockShadowVeil.tga",
-            alertStyle       = "SIDES2",
-        },
-        {
-            buffName         = "Spell Blasting",
-            texture          = "Interface\\Icons\\Spell_Lightning_LightningBolt01",
-            alertTexturePath = "Interface\\AddOns\\ProcDoc\\img\\WarlockSpellBlasting.tga",
-            alertStyle       = "TOP",
-        },
     },
     ["MAGE"] = {
         {
@@ -209,6 +197,18 @@ local PROC_DATA = {
             texture          = "Interface\\Icons\\Spell_Holy_SearingLightPriest",
             alertTexturePath = "Interface\\AddOns\\ProcDoc\\img\\PriestSearingLight.tga",
             alertStyle       = "SIDES2",
+        },
+        {
+            buffName         = "Shadow Veil",
+            texture          = "Interface\\Icons\\Spell_Shadow_GatherShadows",
+            alertTexturePath = "Interface\\AddOns\\ProcDoc\\img\\PriestShadowVeil.tga",
+            alertStyle       = "SIDES2",
+        },
+        {
+            buffName         = "Spell Blasting",
+            texture          = "Interface\\Icons\\Spell_Lightning_LightningBolt01",
+            alertTexturePath = "Interface\\AddOns\\ProcDoc\\img\\PriestSpellBlasting.tga",
+            alertStyle       = "TOP",
         },
     },
     ["PALADIN"] = {
