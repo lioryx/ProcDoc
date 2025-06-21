@@ -60,6 +60,8 @@ ProcDoc supports a variety of procs and alerts when key abilities or buffs becom
 ### **Warlock**
 ![Warlock](https://github.com/wsmaxcy/ProcDoc/blob/main/img/Warlock.png)
 - **Shadow Trance**
+- **Shadow Veil**
+- **Spell Blasting**
 
 
 ### **Mage**

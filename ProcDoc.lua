@@ -60,6 +60,18 @@ local PROC_DATA = {
             alertTexturePath = "Interface\\AddOns\\ProcDoc\\img\\WarlockShadowTrance.tga",
             alertStyle       = "SIDES",
         },
+	    {
+            buffName         = "Shadow Veil",
+            texture          = "Interface\\Icons\\Spell_Shadow_GatherShadows",
+            alertTexturePath = "Interface\\AddOns\\ProcDoc\\img\\WarlockShadowVeil.tga",
+            alertStyle       = "SIDES2",
+        },
+        {
+            buffName         = "Spell Blasting",
+            texture          = "Interface\\Icons\\Spell_Lightning_LightningBolt01",
+            alertTexturePath = "Interface\\AddOns\\ProcDoc\\img\\WarlockSpellBlasting.tga",
+            alertStyle       = "TOP",
+        },
     },
     ["MAGE"] = {
         {
