@@ -352,6 +352,7 @@ local function CreateAlertFrame(style)
     alertObj.hasTimer      = false
     alertObj.procStartTime = nil
     alertObj.procDuration  = nil
+    alertObj.zeroShown     = false
     alertObj.pulseAlpha    = minAlpha
     alertObj.pulseDir      = alphaStep
 
@@ -476,20 +477,29 @@ local function OnUpdateHandler()
             if alertObj.hasTimer and alertObj.procDuration and alertObj.procStartTime then
                 local elapsed   = now - alertObj.procStartTime
                 local remaining = alertObj.procDuration - elapsed
+                local secs
                 if remaining <= 0 then
-                    -- Hide alert (mark forceHide so action proc state resets)
-                    alertObj.isActive      = false
-                    alertObj.hasTimer      = false
-                    alertObj.procStartTime = nil
-                    alertObj.procDuration  = nil
-                    alertObj.forceHide     = true
-                    for _, tex in ipairs(alertObj.textures) do tex:Hide() end
-                    if alertObj.timerTexts then
-                        for _, fs in ipairs(alertObj.timerTexts) do if fs then fs:Hide() end end
+                    secs = 0
+                    if alertObj.zeroShown then
+                        -- Now hide after showing 0 previously
+                        alertObj.isActive      = false
+                        alertObj.hasTimer      = false
+                        alertObj.procStartTime = nil
+                        alertObj.procDuration  = nil
+                        alertObj.forceHide     = true
+                        for _, tex in ipairs(alertObj.textures) do tex:Hide() end
+                        if alertObj.timerTexts then
+                            for _, fs in ipairs(alertObj.timerTexts) do if fs then fs:Hide() end end
+                        end
+                    else
+                        alertObj.zeroShown = true
                     end
                 else
-                    -- Display remaining seconds (ceil)
-                    local secs = math.ceil(remaining)
+                    -- Display remaining seconds (use floor so we reach 0)
+                    secs = math.floor(remaining + 0.0001)
+                    if secs < 0 then secs = 0 end
+                end
+                if alertObj.isActive and secs ~= nil then
                     for _, fs in ipairs(alertObj.timerTexts) do
                         if fs then
                             fs:SetText(secs)
@@ -618,10 +628,11 @@ local function CheckProcs()
                 end
             end
         end
-    if (not ProcDocDB.globalVars.disableTimers) and timeLeft and timeLeft > 0 then
+        if (not ProcDocDB.globalVars.disableTimers) and timeLeft and timeLeft > 0 then
             alertObj.hasTimer      = true
             alertObj.procStartTime = GetTime()
             alertObj.procDuration  = timeLeft
+            alertObj.zeroShown     = false
             -- Create/ensure timer font strings (one per base texture)
             for idx, baseTex in ipairs(alertObj.textures) do
                 if not alertObj.timerTexts[idx] then
@@ -707,6 +718,7 @@ local function ShowActionProcAlert(actionProc)
                 alertObj.hasTimer      = true
                 alertObj.procStartTime = GetTime()
                 alertObj.procDuration  = duration
+                alertObj.zeroShown     = false
                 for idx, baseTex in ipairs(alertObj.textures) do
                     if not alertObj.timerTexts[idx] then
                         local parentFrame = baseTex:GetParent() or ProcDoc or UIParent
