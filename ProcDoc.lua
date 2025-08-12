@@ -27,6 +27,12 @@ initFrame:SetScript("OnEvent", function()
         if ProcDocDB.globalVars.soundVolume == nil then
             ProcDocDB.globalVars.soundVolume = 1.0
         end
+        if ProcDocDB.globalVars.disableTimers == nil then
+            ProcDocDB.globalVars.disableTimers = false
+        end
+        if not ProcDocDB.actionProcDurations then
+            ProcDocDB.actionProcDurations = {}
+        end
         
     
         local gv = ProcDocDB.globalVars
@@ -36,8 +42,9 @@ initFrame:SetScript("OnEvent", function()
         maxScale   = gv.maxScale   or 1.0
         alphaStep  = gv.alphaStep  or 0.01
         pulseSpeed = gv.pulseSpeed or 1.0
-        topOffset  = gv.topOffset  or 150
-        sideOffset = gv.sideOffset or 150
+        topOffset      = gv.topOffset  or 150
+        sideOffset     = gv.sideOffset or 150
+        timerTextAlpha = gv.timerTextAlpha or 0.85  -- semi-transparent timer text
     
         initFrame:UnregisterEvent("VARIABLES_LOADED")
     end
@@ -307,6 +314,26 @@ local ACTION_PROCS = {
 }
 local DEFAULT_ALERT_TEXTURE = "Interface\\AddOns\\ProcDoc\\img\\ProcDocAlert.tga"
 
+-- Optional fixed durations (seconds) for action-based proc windows.
+-- These emulate a timeout so the alert auto-clears even if the action remains usable.
+local ACTION_PROC_DEFAULT_DURATIONS = {
+    ["Overpower"]       = 5,  
+    ["Riposte"]         = 5,  
+    ["Counterattack"]   = 5,  
+    ["Revenge"]         = 5,  
+    ["Surprise Attack"] = 5,  
+    ["Arcane Surge"]    = 4,  
+}
+
+local function GetActionProcDuration(spellName)
+    if not spellName then return nil end
+    local overrides = ProcDocDB.actionProcDurations
+    if overrides and overrides[spellName] and overrides[spellName] > 0 then
+        return overrides[spellName]
+    end
+    return ACTION_PROC_DEFAULT_DURATIONS[spellName]
+end
+
 ----------------------------------------------------------------
 -- 3) ALERT FRAME POOL
 ----------------------------------------------------------------
@@ -319,6 +346,12 @@ local function CreateAlertFrame(style)
     alertObj.isActionBased = false    
     alertObj.style         = style
     alertObj.textures      = {}
+    -- Timer related fields
+    alertObj.sliceGroups   = {}   -- (legacy; unused after reverting wipe)
+    alertObj.timerTexts    = {}   -- per base texture index -> fontstring
+    alertObj.hasTimer      = false
+    alertObj.procStartTime = nil
+    alertObj.procDuration  = nil
     alertObj.pulseAlpha    = minAlpha
     alertObj.pulseDir      = alphaStep
 
@@ -406,18 +439,16 @@ end
 ----------------------------------------------------------------
 -- 4) ONUPDATE PULSE
 ----------------------------------------------------------------
+-- Fixed & simplified OnUpdate handler (previous version had mismatched if/for/end blocks)
 local function OnUpdateHandler()
-    if maxAlpha <= minAlpha then
-        maxAlpha = minAlpha + 0.01
-    end
-    if maxScale <= minScale then
-        maxScale = minScale + 0.01
-    end
+    if maxAlpha <= minAlpha then maxAlpha = minAlpha + 0.01 end
+    if maxScale <= minScale then maxScale = minScale + 0.01 end
 
+    local now = GetTime()
     for _, alertObj in ipairs(alertFrames) do
         if alertObj.isActive then
+            -- Pulse update
             alertObj.pulseAlpha = alertObj.pulseAlpha + (alertObj.pulseDir * pulseSpeed)
-
             if alertObj.pulseAlpha < minAlpha then
                 alertObj.pulseAlpha = minAlpha
                 alertObj.pulseDir   = alphaStep
@@ -426,18 +457,57 @@ local function OnUpdateHandler()
                 alertObj.pulseDir   = -alphaStep
             end
 
+            local scale = 1.0
             local aRange = maxAlpha - minAlpha
-            local scale  = 1.0
             if aRange > 0 then
-                local fraction = (alertObj.pulseAlpha - minAlpha) / aRange
-                scale = minScale + fraction * (maxScale - minScale)
+                local frac = (alertObj.pulseAlpha - minAlpha) / aRange
+                scale = minScale + frac * (maxScale - minScale)
             end
 
+            -- Apply pulse to textures
             for _, tex in ipairs(alertObj.textures) do
                 tex:SetAlpha(alertObj.pulseAlpha)
                 tex:SetWidth(alertObj.baseWidth * scale)
                 tex:SetHeight(alertObj.baseHeight * scale)
+                tex:Show()
             end
+
+            -- Timer countdown text
+            if alertObj.hasTimer and alertObj.procDuration and alertObj.procStartTime then
+                local elapsed   = now - alertObj.procStartTime
+                local remaining = alertObj.procDuration - elapsed
+                if remaining <= 0 then
+                    -- Hide alert (mark forceHide so action proc state resets)
+                    alertObj.isActive      = false
+                    alertObj.hasTimer      = false
+                    alertObj.procStartTime = nil
+                    alertObj.procDuration  = nil
+                    alertObj.forceHide     = true
+                    for _, tex in ipairs(alertObj.textures) do tex:Hide() end
+                    if alertObj.timerTexts then
+                        for _, fs in ipairs(alertObj.timerTexts) do if fs then fs:Hide() end end
+                    end
+                else
+                    -- Display remaining seconds (ceil)
+                    local secs = math.ceil(remaining)
+                    for _, fs in ipairs(alertObj.timerTexts) do
+                        if fs then
+                            fs:SetText(secs)
+                            if timerTextAlpha then fs:SetAlpha(timerTextAlpha) end
+                            fs:Show()
+                        end
+                    end
+                end
+            else
+                -- No timer -> hide any stray timer texts
+                if alertObj.timerTexts then
+                    for _, fs in ipairs(alertObj.timerTexts) do if fs then fs:Hide() end end
+                end
+            end
+        end
+        -- If frame is inactive but leftover timer text somehow visible, hide it
+        if (not alertObj.isActive) and alertObj.timerTexts then
+            for _, fs in ipairs(alertObj.timerTexts) do if fs then fs:Hide() end end
         end
     end
 end
@@ -476,9 +546,13 @@ local function CheckProcs()
     for _, alertObj in ipairs(alertFrames) do
         if (not alertObj.isActionBased) then
             alertObj.isActive = false
-            for _, tex in ipairs(alertObj.textures) do
-                tex:Hide()
+            for _, tex in ipairs(alertObj.textures) do tex:Hide() end
+            if alertObj.timerTexts then
+                for _, fs in ipairs(alertObj.timerTexts) do if fs then fs:Hide() end end
             end
+            alertObj.hasTimer      = false
+            alertObj.procStartTime = nil
+            alertObj.procDuration  = nil
         end
     end
 
@@ -512,11 +586,59 @@ local function CheckProcs()
         alertObj.isActive   = true
         alertObj.pulseAlpha = minAlpha
         alertObj.pulseDir   = alphaStep
+        alertObj.hasTimer      = false
+        alertObj.procStartTime = nil
+        alertObj.procDuration  = nil
 
         local path = procInfo.alertTexturePath or DEFAULT_ALERT_TEXTURE
         for _, tex in ipairs(alertObj.textures) do
             tex:SetTexture(path)
             tex:Show()
+        end
+
+    --------------------------------------------------
+    -- Timer numeric countdown (replaces vertical wipe)
+    --------------------------------------------------
+        local timeLeft
+        if GetPlayerBuffTimeLeft then
+            for i = 0, 31 do
+                local bTex = GetPlayerBuffTexture(i)
+                if bTex then
+                    GameTooltip:SetOwner(UIParent, "ANCHOR_NONE")
+                    GameTooltip:SetPlayerBuff(i)
+                    local bName = (GameTooltipTextLeft1 and GameTooltipTextLeft1:GetText()) or ""
+                    GameTooltip:Hide()
+                    if bName == procInfo.buffName then
+                        local tl = GetPlayerBuffTimeLeft(i)
+                        if tl and tl > 0 then
+                            timeLeft = tl
+                        end
+                        break
+                    end
+                end
+            end
+        end
+    if (not ProcDocDB.globalVars.disableTimers) and timeLeft and timeLeft > 0 then
+            alertObj.hasTimer      = true
+            alertObj.procStartTime = GetTime()
+            alertObj.procDuration  = timeLeft
+            -- Create/ensure timer font strings (one per base texture)
+            for idx, baseTex in ipairs(alertObj.textures) do
+                if not alertObj.timerTexts[idx] then
+                    local parentFrame = baseTex:GetParent() or ProcDoc or UIParent
+                    local fs = parentFrame:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+                    fs:SetPoint("CENTER", baseTex, "CENTER", 0, 0)
+                    fs:SetTextColor(1, 1, 0, 1) -- yellow
+                    if timerTextAlpha then fs:SetAlpha(timerTextAlpha) end
+                    fs:SetText("")
+                    alertObj.timerTexts[idx] = fs
+                end
+            end
+        else
+            -- Ensure timer texts hidden if no duration
+            if alertObj.timerTexts then
+                for _, fs in ipairs(alertObj.timerTexts) do if fs then fs:Hide() end end
+            end
         end
 
         -- 4) If this is a newly gained buff, play the sound (if not muted).
@@ -575,6 +697,29 @@ local function ShowActionProcAlert(actionProc)
             ProcDoc_PlayAlertSound()
         end
 
+        -- Initialize timer if duration configured and timers enabled
+        alertObj.hasTimer      = false
+        alertObj.procStartTime = nil
+        alertObj.procDuration  = nil
+        if (not ProcDocDB.globalVars.disableTimers) then
+            local duration = GetActionProcDuration(spellName)
+            if duration then
+                alertObj.hasTimer      = true
+                alertObj.procStartTime = GetTime()
+                alertObj.procDuration  = duration
+                for idx, baseTex in ipairs(alertObj.textures) do
+                    if not alertObj.timerTexts[idx] then
+                        local parentFrame = baseTex:GetParent() or ProcDoc or UIParent
+                        local fs = parentFrame:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+                        fs:SetPoint("CENTER", baseTex, "CENTER", 0, 0)
+                        fs:SetTextColor(1,1,0,1)
+                        fs:SetText("")
+                        alertObj.timerTexts[idx] = fs
+                    end
+                end
+            end
+        end
+
         state.alertObj = alertObj
     end
 
@@ -591,8 +736,9 @@ local function HideActionProcAlert(actionProc)
     local alertObj = state.alertObj
     if alertObj and alertObj.isActive then
         alertObj.isActive = false
-        for _, tex in ipairs(alertObj.textures) do
-            tex:Hide()
+        for _, tex in ipairs(alertObj.textures) do tex:Hide() end
+        if alertObj.timerTexts then
+            for _, fs in ipairs(alertObj.timerTexts) do if fs then fs:Hide() end end
         end
     end
     state.isActive = false
@@ -647,6 +793,12 @@ local function CheckAllActionProcs()
     for _, actionProc in ipairs(actionProcs) do
         -- skip if disabled
         if ProcDocDB.procsEnabled[actionProc.buffName] ~= false then
+            -- If the underlying alertObj was force hidden (timer expiry), clear state to allow re-trigger
+            local st = actionProcStates[actionProc.spellName or actionProc.buffName]
+            if st and st.alertObj and st.alertObj.forceHide then
+                st.isActive = false
+                st.alertObj.forceHide = nil
+            end
             FindActionSlotAndCheck(actionProc)
         else
             -- if it's currently active, hide it
@@ -841,8 +993,9 @@ local function HideTestBuffAlert(procInfo)
     local alertObj = testProcAlerts[procInfo.buffName]
     if alertObj and alertObj.isActive then
         alertObj.isActive = false
-        for _, tex in ipairs(alertObj.textures) do
-            tex:Hide()
+        for _, tex in ipairs(alertObj.textures) do tex:Hide() end
+        if alertObj.timerTexts then
+            for _, fs in ipairs(alertObj.timerTexts) do if fs then fs:Hide() end end
         end
         testProcAlerts[procInfo.buffName] = nil
     end
@@ -1265,7 +1418,7 @@ local function CreateProcDocOptionsFrame()
         -- MUTE CHECKBOX
         -----------------------------------------------------
         local muteCheck = CreateFrame("CheckButton", nil, f, "UICheckButtonTemplate")
-        muteCheck:SetPoint("TOPLEFT", f, "TOPLEFT", 20, -445) 
+    muteCheck:SetPoint("TOPLEFT", f, "TOPLEFT", 20, -445) 
         muteCheck:SetWidth(24)
         muteCheck:SetHeight(24)
 
@@ -1286,17 +1439,45 @@ local function CreateProcDocOptionsFrame()
             end
         end)
 
+    -----------------------------------------------------
+    -- DISABLE TIMERS CHECKBOX
+    -----------------------------------------------------
+        local timerCheck = CreateFrame("CheckButton", nil, f, "UICheckButtonTemplate")
+        timerCheck:SetPoint("LEFT", muteCheck, "RIGHT", 140, 0) -- place to the right
+        timerCheck:SetWidth(24)
+        timerCheck:SetHeight(24)
+        local timerLabel = timerCheck:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+        timerLabel:SetPoint("LEFT", timerCheck, "RIGHT", 4, 0)
+        timerLabel:SetText("Disable Timers")
+        timerCheck:SetChecked(ProcDocDB.globalVars.disableTimers)
+        timerCheck:SetScript("OnClick", function()
+            if timerCheck:GetChecked() then
+                ProcDocDB.globalVars.disableTimers = true
+                DEFAULT_CHAT_FRAME:AddMessage("|cFF00FFFFProcDoc|r: Timers disabled.")
+                -- Hide any current timer texts immediately
+                for _, aObj in ipairs(alertFrames) do
+                    if aObj.timerTexts then
+                        for _, fs in ipairs(aObj.timerTexts) do if fs then fs:Hide() end end
+                    end
+                    aObj.hasTimer = false
+                end
+            else
+                ProcDocDB.globalVars.disableTimers = false
+                DEFAULT_CHAT_FRAME:AddMessage("|cFF00FFFFProcDoc|r: Timers enabled.")
+            end
+        end)
 
         -----------------------------------------------------
         -- PER-BUFF CHECKBOXES
         -----------------------------------------------------
-        local testLabel = f:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-        testLabel:SetPoint("TOPLEFT", 20, -480)
+    local testLabel = f:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    -- Move list back up (old placement)
+    testLabel:SetPoint("TOPLEFT", 20, -480) -- adjust upward to reclaim removed section space
         testLabel:SetText("|cffffffffBuffs to Show for " .. (UnitClass("player")) .. "|r")
 
          -- SECTION FRAME
         local sectionFrame2 = CreateFrame("Frame", nil, f)
-        sectionFrame2:SetPoint("TOPLEFT", f, "TOPLEFT", 15, -495)
+    sectionFrame2:SetPoint("TOPLEFT", f, "TOPLEFT", 15, -495)
         sectionFrame2:SetPoint("BOTTOMRIGHT", f, "BOTTOMRIGHT", -15, 80)
         sectionFrame2:SetBackdrop({
             bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
@@ -1393,8 +1574,9 @@ local function CreateProcDocOptionsFrame()
             for buffName, alertObj in pairs(testProcAlerts) do
                 if alertObj.isActive then
                     alertObj.isActive = false
-                    for _, tex in ipairs(alertObj.textures) do
-                        tex:Hide()
+                    for _, tex in ipairs(alertObj.textures) do tex:Hide() end
+                    if alertObj.timerTexts then
+                        for _, fs in ipairs(alertObj.timerTexts) do if fs then fs:Hide() end end
                     end
                 end
             end
@@ -1424,8 +1606,9 @@ local function CreateProcDocOptionsFrame()
             for buffName, alertObj in pairs(testProcAlerts) do
                 if alertObj.isActive then
                     alertObj.isActive = false
-                    for _, tex in ipairs(alertObj.textures) do
-                        tex:Hide()
+                    for _, tex in ipairs(alertObj.textures) do tex:Hide() end
+                    if alertObj.timerTexts then
+                        for _, fs in ipairs(alertObj.timerTexts) do if fs then fs:Hide() end end
                     end
                 end
             end
@@ -1451,4 +1634,3 @@ SlashCmdList["PROCDOC"] = function(msg)
     DEFAULT_CHAT_FRAME:AddMessage("|cff00ffffProcDoc|r Options opened. ")
     
 end
-

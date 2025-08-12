@@ -15,6 +15,9 @@
 3. **No Manual Setup Needed**  
    Simply install and go—proc detection is automatic. An in-game options panel (via `/procdoc`) lets you test custom visuals and tweak appearance settings.
 
+4. **Timers for Each Proc**
+   Timers to show you how long you have to cast your spells before time expires.
+   
 ---
 
 ## Installation
