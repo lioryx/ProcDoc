@@ -265,21 +265,21 @@ local ACTION_PROCS = {
             buffName        = "Execute", 
             texture         = "Interface\\Icons\\inv_sword_48",
             alertTexturePath= "Interface\\AddOns\\ProcDoc\\img\\WarriorExecute.tga",
-            alertStyle      = "SIDES2",
+            alertStyle      = "TOP2",
             spellName       = "Execute"
         },
         {
             buffName        = "Counterattack",
             texture         = "Interface\\Icons\\Ability_Warrior_Riposte",
             alertTexturePath= "Interface\\AddOns\\ProcDoc\\img\\WarriorCounterattack.tga",
-            alertStyle      = "SIDES",
+            alertStyle      = "LEFT", -- switched to single left-side style
             spellName       = "Counterattack"
         },
         {
             buffName       = "Revenge",
             texture         = "Interface\\Icons\\Ability_Warrior_Revenge",
             alertTexturePath= "Interface\\AddOns\\ProcDoc\\img\\WarriorRevenge.tga",
-            alertStyle      = "SIDES2",
+            alertStyle      = "RIGHT",
             spellName       = "Revenge"
         }
     },
@@ -393,6 +393,33 @@ local function CreateAlertFrame(style)
 
         table.insert(alertObj.textures, left)
         table.insert(alertObj.textures, right)
+    elseif style == "LEFT" then
+        -- Single left-side vertical texture (same positioning as the LEFT half of SIDES2, no mirrored partner)
+        alertObj.baseWidth  = 128
+        alertObj.baseHeight = 256
+
+        local tex = ProcDoc:CreateTexture(nil, "OVERLAY")
+        local offsetX = sideOffset + 50 -- mimic SIDES2 left offset spacing
+        tex:SetPoint("CENTER", UIParent, "CENTER", -offsetX, topOffset - 150)
+        tex:SetWidth(alertObj.baseWidth)
+        tex:SetHeight(alertObj.baseHeight)
+        tex:SetAlpha(0)
+        tex:Hide()
+        table.insert(alertObj.textures, tex)
+    elseif style == "RIGHT" then
+        -- Single right-side vertical texture (same positioning as the RIGHT half of SIDES2, mirrored)
+        alertObj.baseWidth  = 128
+        alertObj.baseHeight = 256
+
+        local tex = ProcDoc:CreateTexture(nil, "OVERLAY")
+        local offsetX = sideOffset + 50 -- mimic SIDES2 right offset spacing
+        tex:SetPoint("CENTER", UIParent, "CENTER", offsetX, topOffset - 150)
+        tex:SetWidth(alertObj.baseWidth)
+        tex:SetHeight(alertObj.baseHeight)
+        tex:SetTexCoord(1, 0, 0, 1) -- mirror horizontally
+        tex:SetAlpha(0)
+        tex:Hide()
+        table.insert(alertObj.textures, tex)
     end
 
     return alertObj
@@ -900,6 +927,16 @@ local function RefreshTestProc()
 
                 right:ClearAllPoints()
                 right:SetPoint("CENTER", UIParent, "CENTER", offsetX, topOffset - 150)
+            elseif alertObj.style == "LEFT" then
+                local tex = alertObj.textures[1]
+                tex:ClearAllPoints()
+                local offsetX = sideOffset + 50
+                tex:SetPoint("CENTER", UIParent, "CENTER", -offsetX, topOffset - 150)
+            elseif alertObj.style == "RIGHT" then
+                local tex = alertObj.textures[1]
+                tex:ClearAllPoints()
+                local offsetX = sideOffset + 50
+                tex:SetPoint("CENTER", UIParent, "CENTER", offsetX, topOffset - 150)
             end
         end
     end
@@ -927,6 +964,16 @@ local function RefreshTestProc()
 
             right:ClearAllPoints()
             right:SetPoint("CENTER", UIParent, "CENTER", offsetX, topOffset - 150)
+        elseif testProcAlertObj.style == "LEFT" then
+            local tex = testProcAlertObj.textures[1]
+            tex:ClearAllPoints()
+            local offsetX = sideOffset + 50
+            tex:SetPoint("CENTER", UIParent, "CENTER", -offsetX, topOffset - 150)
+        elseif testProcAlertObj.style == "RIGHT" then
+            local tex = testProcAlertObj.textures[1]
+            tex:ClearAllPoints()
+            local offsetX = sideOffset + 50
+            tex:SetPoint("CENTER", UIParent, "CENTER", offsetX, topOffset - 150)
         end
 
         -- Apply alpha & size
@@ -996,6 +1043,16 @@ local function ShowTestBuffAlert(procInfo)
 
         right:ClearAllPoints()
         right:SetPoint("CENTER", UIParent, "CENTER", offsetX, topOffset - 150)
+    elseif style == "LEFT" then
+        local tex = alertObj.textures[1]
+        tex:ClearAllPoints()
+        local offsetX = sideOffset + 50
+        tex:SetPoint("CENTER", UIParent, "CENTER", -offsetX, topOffset - 150)
+    elseif style == "RIGHT" then
+        local tex = alertObj.textures[1]
+        tex:ClearAllPoints()
+        local offsetX = sideOffset + 50
+        tex:SetPoint("CENTER", UIParent, "CENTER", offsetX, topOffset - 150)
     end
 end
 
@@ -1030,7 +1087,8 @@ local function CreateProcDocOptionsFrame()
     if not ProcDocOptionsFrame then
         local f = CreateFrame("Frame", "ProcDocOptionsFrame", UIParent)
         f:SetWidth(340)
-        f:SetHeight(775)
+        -- Height will be set dynamically later once we know proc count
+        f:SetHeight(600)
         f:SetPoint("CENTER", UIParent, "CENTER", -360, 0)
         f:SetBackdrop({
             bgFile   = "Interface\\DialogFrame\\UI-DialogBox-Background",
@@ -1046,19 +1104,24 @@ local function CreateProcDocOptionsFrame()
         f:RegisterForDrag("LeftButton")
         f:SetScript("OnDragStart", function() f:StartMoving() end)
         f:SetScript("OnDragStop", function() f:StopMovingOrSizing() end)
-
-         -- SECTION FRAME
-         local sectionFrame = CreateFrame("Frame", nil, f)
-         sectionFrame:SetPoint("TOPLEFT", f, "TOPLEFT", 15, -30)
-         sectionFrame:SetPoint("BOTTOMRIGHT", f, "BOTTOMRIGHT", -15, 300)
-         sectionFrame:SetBackdrop({
-             bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
-             edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
-             tile = true, tileSize = 8, edgeSize = 16,
-             insets = { left = 3, right = 3, top = 3, bottom = 3 }
-         })
-         sectionFrame:SetBackdropColor(0.2, 0.2, 0.2, 1)
-         sectionFrame:SetBackdropBorderColor(0.5, 0.5, 0.5, 1)        
+        
+        -----------------------------------------------------
+        -- TOP (STATIC) SETTINGS SECTION (sliders / checkboxes #1)
+        -- We'll give it a fixed height; rest of the frame (proc list) will resize.
+        -----------------------------------------------------
+        local TOP_SECTION_HEIGHT = 450  -- approximate space needed for all sliders & first row of checkboxes
+        local sectionFrame = CreateFrame("Frame", nil, f)
+        sectionFrame:SetPoint("TOPLEFT", f, "TOPLEFT", 15, -30)
+        sectionFrame:SetWidth(f:GetWidth() - 30)
+        sectionFrame:SetHeight(TOP_SECTION_HEIGHT)
+        sectionFrame:SetBackdrop({
+            bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
+            edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+            tile = true, tileSize = 8, edgeSize = 16,
+            insets = { left = 3, right = 3, top = 3, bottom = 3 }
+        })
+        sectionFrame:SetBackdropColor(0.2, 0.2, 0.2, 1)
+        sectionFrame:SetBackdropBorderColor(0.5, 0.5, 0.5, 1)
 
         table.insert(UISpecialFrames, "ProcDocOptionsFrame")
 
@@ -1346,6 +1409,16 @@ local function CreateProcDocOptionsFrame()
         
                         right:ClearAllPoints()
                         right:SetPoint("CENTER", UIParent, "CENTER", offsetX, topOffset - 150)
+                    elseif alertObj.style == "LEFT" then
+                        local tex = alertObj.textures[1]
+                        tex:ClearAllPoints()
+                        local offsetX = sideOffset + 50
+                        tex:SetPoint("CENTER", UIParent, "CENTER", -offsetX, topOffset - 150)
+                    elseif alertObj.style == "RIGHT" then
+                        local tex = alertObj.textures[1]
+                        tex:ClearAllPoints()
+                        local offsetX = sideOffset + 50
+                        tex:SetPoint("CENTER", UIParent, "CENTER", offsetX, topOffset - 150)
                     end
                 end
             end
@@ -1429,8 +1502,8 @@ local function CreateProcDocOptionsFrame()
         -----------------------------------------------------
         -- MUTE CHECKBOX
         -----------------------------------------------------
-        local muteCheck = CreateFrame("CheckButton", nil, f, "UICheckButtonTemplate")
-    muteCheck:SetPoint("TOPLEFT", f, "TOPLEFT", 20, -445) 
+    local muteCheck = CreateFrame("CheckButton", nil, f, "UICheckButtonTemplate")
+    muteCheck:SetPoint("TOPLEFT", sectionFrame, "TOPLEFT", 5, - (TOP_SECTION_HEIGHT - 30)) -- near bottom of top section
         muteCheck:SetWidth(24)
         muteCheck:SetHeight(24)
 
@@ -1454,8 +1527,8 @@ local function CreateProcDocOptionsFrame()
     -----------------------------------------------------
     -- DISABLE TIMERS CHECKBOX
     -----------------------------------------------------
-        local timerCheck = CreateFrame("CheckButton", nil, f, "UICheckButtonTemplate")
-        timerCheck:SetPoint("LEFT", muteCheck, "RIGHT", 140, 0) -- place to the right
+    local timerCheck = CreateFrame("CheckButton", nil, f, "UICheckButtonTemplate")
+    timerCheck:SetPoint("LEFT", muteCheck, "RIGHT", 140, 0) -- place to the right of mute
         timerCheck:SetWidth(24)
         timerCheck:SetHeight(24)
         local timerLabel = timerCheck:CreateFontString(nil, "OVERLAY", "GameFontNormal")
@@ -1482,15 +1555,13 @@ local function CreateProcDocOptionsFrame()
         -----------------------------------------------------
         -- PER-BUFF CHECKBOXES
         -----------------------------------------------------
-    local testLabel = f:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    -- Move list back up (old placement)
-    testLabel:SetPoint("TOPLEFT", 20, -480) -- adjust upward to reclaim removed section space
-        testLabel:SetText("|cffffffffBuffs to Show for " .. (UnitClass("player")) .. "|r")
+        -----------------------------------------------------
+        -- DYNAMIC PROC LIST SECTION
+        -----------------------------------------------------
+        local testLabel = f:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+        testLabel:SetText("|cffffffffProc Animations to Show for " .. (UnitClass("player")) .. "|r")
 
-         -- SECTION FRAME
         local sectionFrame2 = CreateFrame("Frame", nil, f)
-    sectionFrame2:SetPoint("TOPLEFT", f, "TOPLEFT", 15, -495)
-        sectionFrame2:SetPoint("BOTTOMRIGHT", f, "BOTTOMRIGHT", -15, 80)
         sectionFrame2:SetBackdrop({
             bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
             edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
@@ -1500,63 +1571,76 @@ local function CreateProcDocOptionsFrame()
         sectionFrame2:SetBackdropColor(0.2, 0.2, 0.2, 1)
         sectionFrame2:SetBackdropBorderColor(0.5, 0.5, 0.5, 1)
 
-        local yOffset = -500
+        local numProcs = 0
+        for _ in ipairs(classProcs) do numProcs = numProcs + 1 end
+        local ROW_HEIGHT = 28
+        local LIST_EXTRA_PADDING = 10 -- padding inside frame
+        local listHeight = (numProcs * ROW_HEIGHT) + LIST_EXTRA_PADDING
+        if listHeight < 60 then listHeight = 36 end
+
+        -- Anchor the dynamic list directly below the top section
+        sectionFrame2:ClearAllPoints()
+        sectionFrame2:SetPoint("TOPLEFT", sectionFrame, "BOTTOMLEFT", 0, -20)
+        sectionFrame2:SetWidth(sectionFrame:GetWidth())
+        sectionFrame2:SetHeight(listHeight)
+
+        -- Position label inside sectionFrame2
+        testLabel:ClearAllPoints()
+        testLabel:SetPoint("TOPLEFT", sectionFrame2, "TOPLEFT", 5, 13)
+
+        local firstCheckY = -25  -- relative to sectionFrame2 top
         -------------------------------------------------------------
         -- A table to hold references to each buff's checkbox
         -------------------------------------------------------------
-        local checkBoxes = {}  
+    local checkBoxes = {}
 
         -------------------------------------------------------------
         -- In your for-loop that creates checkboxes, store them:
         -------------------------------------------------------------
+        local idx = 0
         for _, procInfo in ipairs(classProcs) do
-            local check = CreateFrame("CheckButton", nil, f, "UICheckButtonTemplate")
-            check:SetPoint("TOPLEFT", 20, yOffset)
+            idx = idx + 1
+            local check = CreateFrame("CheckButton", nil, sectionFrame2, "UICheckButtonTemplate")
             check:SetHeight(24)
             check:SetWidth(24)
-        
+            check:ClearAllPoints()
+            local yOff = firstCheckY - ((idx - 1) * ROW_HEIGHT - 19)
+            check:SetPoint("TOPLEFT", sectionFrame2, "TOPLEFT", 5, yOff)
+
             local label = check:CreateFontString(nil, "OVERLAY", "GameFontNormal")
             label:SetPoint("LEFT", check, "RIGHT", 4, 0)
             label:SetText(procInfo.buffName)
-        
-            -- Make a local copy so each OnClick has its own reference
+
             local localProcInfo = procInfo
-        
-            ----------------------------------------------------------------------------
-            -- HERE is the important line: put the newly created check in the checkBoxes table
-            ----------------------------------------------------------------------------
             checkBoxes[localProcInfo.buffName] = check
-        
-            -- Set up the OnClick
             check:SetScript("OnClick", function()
                 local bName = localProcInfo.buffName
-        
                 local isChecked = check:GetChecked()
-                if not bName then
-                    return
-                end
-                
+                if not bName then return end
                 if isChecked then
                     ProcDocDB.procsEnabled[bName] = true
                 else
                     ProcDocDB.procsEnabled[bName] = false
                 end
             end)
-        
-            -- Default to checked if not disabled
             local isEnabled = (ProcDocDB.procsEnabled[procInfo.buffName] ~= false)
             check:SetChecked(isEnabled)
-        
-            yOffset = yOffset - 28
         end
-        
-        
+
+        -----------------------------------------------------
+        -- Recompute full frame height now that we know list height
+        -----------------------------------------------------
+        local BUTTON_BLOCK_HEIGHT = 70 -- space for buttons + padding
+        local totalHeight = 30 + TOP_SECTION_HEIGHT + 10 + listHeight + BUTTON_BLOCK_HEIGHT + 20
+        if totalHeight < 520 then totalHeight = 520 end -- minimum so sliders area not cramped
+        f:SetHeight(totalHeight)
 
         -------------------------------------------------------------
         -- Modify your existing "Test Proc" button:
         -------------------------------------------------------------
-        local testButton = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
-        testButton:SetPoint("BOTTOM", 0, 10)
+    local testButton = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
+    testButton:ClearAllPoints()
+    testButton:SetPoint("TOP", sectionFrame2, "BOTTOM", 0, -45)
         testButton:SetWidth(120)
         testButton:SetHeight(25)
         testButton:SetText("Test Proc")
@@ -1576,8 +1660,9 @@ local function CreateProcDocOptionsFrame()
         -----------------------------------------------------
         -- HIDE ALL
         -----------------------------------------------------
-        local hideAllBtn = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
-        hideAllBtn:SetPoint("BOTTOMLEFT", 20, 40)
+    local hideAllBtn = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
+    hideAllBtn:ClearAllPoints()
+    hideAllBtn:SetPoint("TOPLEFT", sectionFrame2, "BOTTOMLEFT", 5, -15)
         hideAllBtn:SetWidth(120)
         hideAllBtn:SetHeight(25)
         hideAllBtn:SetText("Hide All")
@@ -1609,8 +1694,9 @@ local function CreateProcDocOptionsFrame()
         -----------------------------------------------------
         -- CLOSE BUTTON
         -----------------------------------------------------
-        local closeButton = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
-        closeButton:SetPoint("BOTTOMRIGHT", -20, 40)
+    local closeButton = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
+    closeButton:ClearAllPoints()
+    closeButton:SetPoint("TOPRIGHT", sectionFrame2, "BOTTOMRIGHT", -5, -15)
         closeButton:SetWidth(120)
         closeButton:SetHeight(25)
         closeButton:SetText("Close")
