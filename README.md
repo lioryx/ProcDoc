@@ -62,9 +62,7 @@ ProcDoc supports a variety of procs and alerts when key abilities or buffs becom
 
 ### **Warlock**
 ![Warlock](https://github.com/wsmaxcy/ProcDoc/blob/main/img/Warlock.png)
-- **Shadow Trance**
-- **Shadow Veil**
-- **Spell Blasting**
+- **Shadow Trance (Nightfall)**
 
 
 ### **Mage**
@@ -103,6 +101,7 @@ ProcDoc supports a variety of procs and alerts when key abilities or buffs becom
 - **Remorseless**
 - **Riposte**
 - **Surprise Attack**
+- **Tricks of the Trade**
 
 
 ### **Shaman**
@@ -119,6 +118,8 @@ ProcDoc supports a variety of procs and alerts when key abilities or buffs becom
 - **Resurgence**
 - **Enlightened**
 - **Searing Light**
+- **Shadow Veil**
+- **Spell Blasting**
 
 
 ### **Hunter**
@@ -126,6 +127,8 @@ ProcDoc supports a variety of procs and alerts when key abilities or buffs becom
 - **Quick Shots**
 - **Counterattack**
 - **Mongoose Bite**
+- **Coming Soon - Lacerate**
+- **Coming Soon - Baited Shot**
 
 
 ### **Paladin**

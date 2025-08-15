@@ -1,10 +1,7 @@
 -- ProcDoc.lua
 
-------------------------------------------------------------
--- 0) GLOBALS
-------------------------------------------------------------
-
--- 1) CREATE A FRAME TO INITIALIZE DB
+-- 1) SavedVariables initialization
+--    Creates a frame to initialize persistent settings on VARIABLES_LOADED.
 local initFrame = CreateFrame("Frame", "ProcDocDBInitFrame", UIParent)
 initFrame:RegisterEvent("VARIABLES_LOADED")
 
@@ -50,15 +47,11 @@ initFrame:SetScript("OnEvent", function()
     end
 end)
     
-------------------------------------------------------------
--- 1) MAIN ADDON FRAME
-------------------------------------------------------------
+-- 2) Main addon frame
 local addonName = "ProcDoc"
 local ProcDoc   = CreateFrame("Frame", "ProcDocAlertFrame", UIParent)
 
-------------------------------------------------------------
--- 2) TABLE OF PROCS
-------------------------------------------------------------
+-- 3) Proc data tables
 local PROC_DATA = {
     ["WARLOCK"] = {
         {
@@ -98,6 +91,12 @@ local PROC_DATA = {
             texture          = "Interface\\Icons\\Spell_Arcane_Blast",
             alertTexturePath = "Interface\\AddOns\\ProcDoc\\img\\MageArcaneRupture.tga",
             alertStyle       = "SIDES",
+        },
+        {
+            buffName         = "Hot Streak",
+            texture          = "Interface\\Icons\\Spell_Fire_Firestarter", -- generic fire icon (may differ on server)
+            alertTexturePath = "Interface\\AddOns\\ProcDoc\\img\\WarriorRevenge.tga", -- sample texture for test button preview
+            alertStyle       = "LEFT", -- preview only; live logic spawns LEFT/RIGHT/TOP2 as tiers advance
         },
     },
     ["DRUID"] = {
@@ -233,6 +232,12 @@ local PROC_DATA = {
             alertTexturePath = "Interface\\AddOns\\ProcDoc\\img\\RogueRemorseless.tga",
             alertStyle       = "SIDES",
         },
+        {
+            buffName         = "Tricks of the Trade",
+            texture          = "Interface\\Icons\\INV_Misc_Key_03",
+            alertTexturePath = "Interface\\AddOns\\ProcDoc\\img\\RogueTricksoftheTrade.tga",
+            alertStyle       = "TOP",
+        },
     },
 }
 
@@ -325,6 +330,13 @@ local ACTION_PROC_DEFAULT_DURATIONS = {
     ["Arcane Surge"]    = 4,  
 }
 
+-- Hot Streak (Turtle WoW custom, stack-based visual) constants (Vanilla 1.12 compatible logic)
+local HOT_STREAK_BUFF_NAME = "Hot Streak"
+-- Re-use existing textures in the addon: WarriorEnrage for side build-up, MageArcaneRupture for final top burst.
+local HOT_STREAK_SIDE_TEXTURE = "Interface\\AddOns\\ProcDoc\\img\\WarriorRevenge.tga"
+local HOT_STREAK_TOP_TEXTURE  = "Interface\\AddOns\\ProcDoc\\img\\MageHotStreak.tga"
+local hotStreakLastTier = 0  -- 0,3,4,5 (we only care about tiers 3/4/5)
+
 local function GetActionProcDuration(spellName)
     if not spellName then return nil end
     local overrides = ProcDocDB.actionProcDurations
@@ -334,9 +346,7 @@ local function GetActionProcDuration(spellName)
     return ACTION_PROC_DEFAULT_DURATIONS[spellName]
 end
 
-----------------------------------------------------------------
--- 3) ALERT FRAME POOL
-----------------------------------------------------------------
+-- 4) Alert frame pool
 
 local alertFrames = {}
 
@@ -464,10 +474,7 @@ local function ProcDoc_PlayAlertSound()
 end
 
 
-----------------------------------------------------------------
--- 4) ONUPDATE PULSE
-----------------------------------------------------------------
--- Fixed & simplified OnUpdate handler (previous version had mismatched if/for/end blocks)
+-- 5) OnUpdate pulse logic (handles alpha/scale pulsing and optional timer text)
 local function OnUpdateHandler()
     if maxAlpha <= minAlpha then maxAlpha = minAlpha + 0.01 end
     if maxScale <= minScale then maxScale = minScale + 0.01 end
@@ -554,9 +561,7 @@ ProcDoc:SetWidth(1)
 ProcDoc:SetHeight(1)
 ProcDoc:SetPoint("CENTER", UIParent, "CENTER")
 
-----------------------------------------------------------------
--- 5) MERGE “BUFF” & “ACTION” PROCS FOR THIS CLASS
-----------------------------------------------------------------
+-- 6) Merge buff & action proc definitions for the player's class
 local _, playerClass = UnitClass("player")
 
 local normalProcs  = PROC_DATA[playerClass] or {}
@@ -571,9 +576,7 @@ for _, q in ipairs(actionProcs) do
     table.insert(classProcs, q)
 end
 
-----------------------------------------------------------------
--- BUFF-BASED DETECTION
-----------------------------------------------------------------
+-- 7) Buff-based detection
 
 -- Holds which buff names we’ve already played a sound for.
 local knownBuffProcs = {}
@@ -597,12 +600,24 @@ local function CheckProcs()
     local activeBuffProcs = {}
     local activeBuffNames = {}  -- just the names, for quick “did it fall off?” checks
 
+    local hotStreakStacks = 0
     for i = 0, 31 do
         local buffTexture = GetPlayerBuffTexture(i)
         if buffTexture then
             GameTooltip:SetOwner(UIParent, "ANCHOR_NONE")
             GameTooltip:SetPlayerBuff(i)
             local buffName = (GameTooltipTextLeft1 and GameTooltipTextLeft1:GetText()) or ""
+            local stackGuess = 0
+            -- Vanilla 1.12: stacks often appear as right text or in second left line; attempt simple numeric parse
+            if GameTooltipTextRight1 and GameTooltipTextRight1:GetText() then
+                local rn = tonumber(GameTooltipTextRight1:GetText())
+                if rn then stackGuess = rn end
+            end
+            if stackGuess == 0 and GameTooltipTextLeft2 and GameTooltipTextLeft2:GetText() then
+                local ln2 = GameTooltipTextLeft2:GetText()
+                local ln2n = tonumber(ln2)
+                if ln2n then stackGuess = ln2n end
+            end
             GameTooltip:Hide()
 
             for _, procInfo in ipairs(normalProcs) do
@@ -611,6 +626,20 @@ local function CheckProcs()
                         table.insert(activeBuffProcs, procInfo)
                         activeBuffNames[procInfo.buffName] = true
                     end
+                end
+            end
+            -- Hot Streak detection (fuzzy, allow lowercase compare, handle possible rank suffixes)
+            if buffName ~= "" then
+                local lowerName = string.lower(buffName)
+                if lowerName == string.lower(HOT_STREAK_BUFF_NAME) or string.find(lowerName, "hot streak") then
+                    -- Prefer API for stacks if available
+                    local apiStacks
+                    if GetPlayerBuffApplications then
+                        apiStacks = GetPlayerBuffApplications(i)
+                    end
+                    local stacks = apiStacks or stackGuess
+                    if not stacks or stacks < 1 then stacks = 1 end
+                    if stacks > hotStreakStacks then hotStreakStacks = stacks end
                 end
             end
         end
@@ -633,9 +662,7 @@ local function CheckProcs()
             tex:Show()
         end
 
-    --------------------------------------------------
-    -- Timer numeric countdown (replaces vertical wipe)
-    --------------------------------------------------
+    -- Timer numeric countdown (replaces prior vertical wipe implementation)
         local timeLeft
         if GetPlayerBuffTimeLeft then
             for i = 0, 31 do
@@ -695,15 +722,86 @@ local function CheckProcs()
             knownBuffProcs[bName] = nil
         end
     end
+
+    -- 6) Hot Streak tier visuals (3=LEFT, 4=LEFT+RIGHT, 5=LEFT+RIGHT+TOP)
+    if playerClass == "MAGE" and ProcDocDB.procsEnabled[HOT_STREAK_BUFF_NAME] ~= false then
+        local tier = 0
+        if hotStreakStacks >= 5 then tier = 5 elseif hotStreakStacks == 4 then tier = 4 elseif hotStreakStacks == 3 then tier = 3 end
+
+        -- Hide previous tier frames if tier dropped or returned to 0
+        if tier == 0 and hotStreakLastTier ~= 0 then
+            for _, alertObj in ipairs(alertFrames) do
+                if alertObj.isActive and (alertObj.style == "LEFT" or alertObj.style == "RIGHT" or alertObj.style == "TOP" or alertObj.style == "TOP2") then
+                    -- Only hide those using our Hot Streak textures
+                    local hide = false
+                    for _, tex in ipairs(alertObj.textures) do
+                        local tPath = tex:GetTexture()
+                        if tPath == HOT_STREAK_SIDE_TEXTURE or tPath == HOT_STREAK_TOP_TEXTURE then hide = true break end
+                    end
+                    if hide then
+                        alertObj.isActive = false
+                        for _, tex in ipairs(alertObj.textures) do tex:Hide() end
+                    end
+                end
+            end
+        end
+
+        if tier >= 3 then
+            -- LEFT
+            local leftObj = AcquireAlertFrame("LEFT", false)
+            leftObj.isActive = true
+            leftObj.pulseAlpha = minAlpha
+            leftObj.pulseDir = alphaStep
+            for _, tex in ipairs(leftObj.textures) do
+                tex:SetTexture(HOT_STREAK_SIDE_TEXTURE)
+                tex:SetAlpha(minAlpha)
+                tex:SetWidth(leftObj.baseWidth * minScale)
+                tex:SetHeight(leftObj.baseHeight * minScale)
+                tex:Show()
+            end
+        end
+        if tier >= 4 then
+            -- RIGHT
+            local rightObj = AcquireAlertFrame("RIGHT", false)
+            rightObj.isActive = true
+            rightObj.pulseAlpha = minAlpha
+            rightObj.pulseDir = alphaStep
+            for _, tex in ipairs(rightObj.textures) do
+                tex:SetTexture(HOT_STREAK_SIDE_TEXTURE)
+                tex:SetAlpha(minAlpha)
+                tex:SetWidth(rightObj.baseWidth * minScale)
+                tex:SetHeight(rightObj.baseHeight * minScale)
+                tex:Show()
+            end
+        end
+        if tier >= 5 then
+            -- TOP (use TOP2 for spacing consistency with existing top visuals)
+            local topObj = AcquireAlertFrame("TOP2", false)
+            topObj.isActive = true
+            topObj.pulseAlpha = minAlpha
+            topObj.pulseDir = alphaStep
+            for _, tex in ipairs(topObj.textures) do
+                tex:SetTexture(HOT_STREAK_TOP_TEXTURE)
+                tex:SetAlpha(minAlpha)
+                tex:SetWidth(topObj.baseWidth * minScale)
+                tex:SetHeight(topObj.baseHeight * minScale)
+                tex:Show()
+            end
+        end
+
+        -- Play sound only on entering a new tier (avoid spam every scan)
+        if tier ~= 0 and tier ~= hotStreakLastTier then
+            if not ProcDocDB.globalVars.isMuted then ProcDoc_PlayAlertSound() end
+        end
+        hotStreakLastTier = tier
+    end
 end
 
 
 
 
-----------------------------------------------------------------
--- 6) ACTION-BASED DETECTION (Multiple)
-----------------------------------------------------------------
--- track states per ability
+-- 8) Action-based detection (per-ability usability checks)
+--    Track states per ability
 local actionProcStates = {}
 
 local function ShowActionProcAlert(actionProc)
@@ -848,9 +946,7 @@ end
 
 
 
-------------------------------------------------------------
---7) The event frame for action-based procs
-------------------------------------------------------------
+-- 9) Event frame for action-based procs
 
 -- If your older client needs the old style event usage, do the "global event" trick:
 local actionFrame = CreateFrame("Frame", "ProcDocActionFrame", UIParent)
@@ -890,9 +986,7 @@ actionFrame:SetScript("OnEvent", function()
 end)
 
 
-----------------------------------------------------------------
--- 8) AURA FRAME
-----------------------------------------------------------------
+-- 10) Aura change event (buff-based proc refresh)
 -- Also old-style event usage if needed:
 local auraFrame = CreateFrame("Frame", "ProcDocAuraFrame", UIParent)
 auraFrame:RegisterEvent("PLAYER_AURAS_CHANGED")
@@ -902,9 +996,7 @@ auraFrame:SetScript("OnEvent", function()
 end)
 
 DEFAULT_CHAT_FRAME:AddMessage("|cff00ff00ProcDoc|r Loaded. Tracking procs for "..(UnitClass("player"))..". Type |cff00ffff/procdoc|r for options.")
-------------------------------------------------------------
--- 9) TEST PROC + OPTIONS FRAME
-------------------------------------------------------------
+-- 11) Test proc + options frame helpers
 local testProcActive = false
 local testProcAlertObj = nil
 local testProcAlerts = {}  
@@ -994,9 +1086,7 @@ end
 
 
 
-------------------------------------------------------------
--- 10) MULTI-TEST ALERTS
-------------------------------------------------------------
+-- 12) Multi-test alerts (for previewing multiple proc visuals)
 
 local function ShowTestBuffAlert(procInfo)
     local style = procInfo.alertStyle or "SIDES"
@@ -1070,9 +1160,7 @@ local function HideTestBuffAlert(procInfo)
     end
 end
 
-------------------------------------------------------------
--- 11) CREATE OPTIONS UI
-------------------------------------------------------------
+-- 13) Options UI
 local function CreateProcDocOptionsFrame()
 
 
@@ -1105,10 +1193,7 @@ local function CreateProcDocOptionsFrame()
         f:SetScript("OnDragStart", function() f:StartMoving() end)
         f:SetScript("OnDragStop", function() f:StopMovingOrSizing() end)
         
-        -----------------------------------------------------
-        -- TOP (STATIC) SETTINGS SECTION (sliders / checkboxes #1)
-        -- We'll give it a fixed height; rest of the frame (proc list) will resize.
-        -----------------------------------------------------
+    -- Top (static) settings section (sliders / primary checkboxes)
         local TOP_SECTION_HEIGHT = 450  -- approximate space needed for all sliders & first row of checkboxes
         local sectionFrame = CreateFrame("Frame", nil, f)
         sectionFrame:SetPoint("TOPLEFT", f, "TOPLEFT", 15, -30)
@@ -1127,9 +1212,7 @@ local function CreateProcDocOptionsFrame()
 
 
 
-        -----------------------------------------------------
-        -- TITLE
-        -----------------------------------------------------
+    -- Title
         local titleFrame = CreateFrame("Frame", nil, f)
         titleFrame:SetPoint("TOP", f, "TOP", 0, 12)
         titleFrame:SetWidth(256)
@@ -1160,9 +1243,7 @@ local function CreateProcDocOptionsFrame()
         end
         
 
-        -----------------------------------------------------
-        -- MIN TRANSPARENCY SLIDER
-        -----------------------------------------------------
+    -- Min transparency slider
         local sliderLabel1 = sectionFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
         sliderLabel1:SetPoint("TOPLEFT", 10, -10)
         sliderLabel1:SetText("Min Transparency:")
@@ -1209,9 +1290,7 @@ local function CreateProcDocOptionsFrame()
             UpdateLiveProcs()
         end)
 
-        -----------------------------------------------------
-        -- MAX TRANSPARENCY SLIDER
-        -----------------------------------------------------
+    -- Max transparency slider
         local sliderLabel2 = sectionFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
         sliderLabel2:SetPoint("TOPLEFT", 10, -70)
         sliderLabel2:SetText("Max Transparency:")
@@ -1256,9 +1335,7 @@ local function CreateProcDocOptionsFrame()
             UpdateLiveProcs()
         end)
 
-        -----------------------------------------------------
-        -- MIN SIZE SLIDER
-        -----------------------------------------------------
+    -- Min size slider
         local sizeLabel1 = sectionFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
         sizeLabel1:SetPoint("TOPLEFT", 10, -130)
         sizeLabel1:SetText("Min Size:")
@@ -1303,9 +1380,7 @@ local function CreateProcDocOptionsFrame()
             UpdateLiveProcs()
         end)
 
-        -----------------------------------------------------
-        -- MAX SIZE SLIDER
-        -----------------------------------------------------
+    -- Max size slider
         local sizeLabel2 = sectionFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
         sizeLabel2:SetPoint("TOPLEFT", 10, -190)
         sizeLabel2:SetText("Max Size:")
@@ -1350,9 +1425,7 @@ local function CreateProcDocOptionsFrame()
             UpdateLiveProcs()
         end)
 
-        -----------------------------------------------------
-        -- Pulse Speed Slider
-        -----------------------------------------------------
+    -- Pulse speed slider
 
         local speedLabel = sectionFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
         speedLabel:SetPoint("TOPLEFT", 10, -250)
@@ -1424,9 +1497,7 @@ local function CreateProcDocOptionsFrame()
             end
         end
 
-        ------------------------------------
-        -- Top Offset Slider
-        ------------------------------------
+    -- Top offset slider
         local topLabel = sectionFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
         topLabel:SetPoint("TOPLEFT", 10, -310)
         topLabel:SetText("Top Offset:")
@@ -1461,9 +1532,7 @@ local function CreateProcDocOptionsFrame()
             ReanchorAllLiveProcs()
         end)
 
-        ------------------------------------
-        -- Side Offset Slider
-        ------------------------------------
+    -- Side offset slider
         local sideLabel = sectionFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
         sideLabel:SetPoint("TOPLEFT", 10, -370)
         sideLabel:SetText("Side Offset:")
@@ -1499,9 +1568,7 @@ local function CreateProcDocOptionsFrame()
             ReanchorAllLiveProcs()
         end)
 
-        -----------------------------------------------------
-        -- MUTE CHECKBOX
-        -----------------------------------------------------
+    -- Mute checkbox
     local muteCheck = CreateFrame("CheckButton", nil, f, "UICheckButtonTemplate")
     muteCheck:SetPoint("TOPLEFT", sectionFrame, "TOPLEFT", 5, - (TOP_SECTION_HEIGHT - 30)) -- near bottom of top section
         muteCheck:SetWidth(24)
@@ -1524,9 +1591,7 @@ local function CreateProcDocOptionsFrame()
             end
         end)
 
-    -----------------------------------------------------
-    -- DISABLE TIMERS CHECKBOX
-    -----------------------------------------------------
+    -- Disable timers checkbox
     local timerCheck = CreateFrame("CheckButton", nil, f, "UICheckButtonTemplate")
     timerCheck:SetPoint("LEFT", muteCheck, "RIGHT", 140, 0) -- place to the right of mute
         timerCheck:SetWidth(24)
@@ -1552,12 +1617,7 @@ local function CreateProcDocOptionsFrame()
             end
         end)
 
-        -----------------------------------------------------
-        -- PER-BUFF CHECKBOXES
-        -----------------------------------------------------
-        -----------------------------------------------------
-        -- DYNAMIC PROC LIST SECTION
-        -----------------------------------------------------
+    -- Dynamic proc list section
         local testLabel = f:CreateFontString(nil, "OVERLAY", "GameFontNormal")
         testLabel:SetText("|cffffffffProc Animations to Show for " .. (UnitClass("player")) .. "|r")
 
@@ -1589,14 +1649,10 @@ local function CreateProcDocOptionsFrame()
         testLabel:SetPoint("TOPLEFT", sectionFrame2, "TOPLEFT", 5, 13)
 
         local firstCheckY = -25  -- relative to sectionFrame2 top
-        -------------------------------------------------------------
-        -- A table to hold references to each buff's checkbox
-        -------------------------------------------------------------
+    -- Table to hold references to each buff's checkbox
     local checkBoxes = {}
 
-        -------------------------------------------------------------
-        -- In your for-loop that creates checkboxes, store them:
-        -------------------------------------------------------------
+    -- Build checkbox list
         local idx = 0
         for _, procInfo in ipairs(classProcs) do
             idx = idx + 1
@@ -1627,17 +1683,13 @@ local function CreateProcDocOptionsFrame()
             check:SetChecked(isEnabled)
         end
 
-        -----------------------------------------------------
-        -- Recompute full frame height now that we know list height
-        -----------------------------------------------------
+    -- Recompute full frame height now that we know list height
         local BUTTON_BLOCK_HEIGHT = 70 -- space for buttons + padding
         local totalHeight = 30 + TOP_SECTION_HEIGHT + 10 + listHeight + BUTTON_BLOCK_HEIGHT + 20
         if totalHeight < 520 then totalHeight = 520 end -- minimum so sliders area not cramped
         f:SetHeight(totalHeight)
 
-        -------------------------------------------------------------
-        -- Modify your existing "Test Proc" button:
-        -------------------------------------------------------------
+    -- Test proc button (shows alerts for all checked procs)
     local testButton = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
     testButton:ClearAllPoints()
     testButton:SetPoint("TOP", sectionFrame2, "BOTTOM", 0, -45)
@@ -1657,9 +1709,7 @@ local function CreateProcDocOptionsFrame()
             end
         end)
 
-        -----------------------------------------------------
-        -- HIDE ALL
-        -----------------------------------------------------
+    -- Hide all test alerts button
     local hideAllBtn = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
     hideAllBtn:ClearAllPoints()
     hideAllBtn:SetPoint("TOPLEFT", sectionFrame2, "BOTTOMLEFT", 5, -15)
@@ -1691,9 +1741,7 @@ local function CreateProcDocOptionsFrame()
             DEFAULT_CHAT_FRAME:AddMessage("|cFF00FFFF[ProcDoc]|r All test buff alerts hidden.")
         end)
 
-        -----------------------------------------------------
-        -- CLOSE BUTTON
-        -----------------------------------------------------
+    -- Close button
     local closeButton = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
     closeButton:ClearAllPoints()
     closeButton:SetPoint("TOPRIGHT", sectionFrame2, "BOTTOMRIGHT", -5, -15)
@@ -1721,9 +1769,7 @@ local function CreateProcDocOptionsFrame()
 end
 
 
-------------------------------------------------------------
--- 12) SLASH COMMAND
-------------------------------------------------------------
+-- 14) Slash command
 SLASH_PROCDOC1 = "/procdoc"
 SlashCmdList["PROCDOC"] = function(msg)
     local cmd = string.lower(msg or "")
