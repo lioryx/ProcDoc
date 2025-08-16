@@ -63,31 +63,39 @@ You can experiment with these in the **`/procdoc`** panel. Changes are saved aut
 ProcDoc supports a variety of procs and alerts when key abilities or buffs become available for each class. Below is a list of currently supported procs:
 
 ### **Warlock**
+<center>
 ![Warlock](https://github.com/wsmaxcy/ProcDoc/blob/main/img/Warlock.png)
-- **Shadow Trance (Nightfall)**
 
+- **Shadow Trance (Nightfall)**
+</center>
 
 ### **Mage**
+<center>
 ![Mage](https://github.com/wsmaxcy/ProcDoc/blob/main/img/Mage.png)
+
 - **Clearcasting**
 - **Netherwind Focus**
 - **Temporal Convergence**
 - **Flash Freeze**
 - **Arcane Surge**
 - **Arcane Rupture**
-
+</center>
 
 ### **Warrior**
+<center>
 ![Warrior](https://github.com/wsmaxcy/ProcDoc/blob/main/img/Warrior.png)
+
 - **Enrage**
 - **Overpower**
 - **Execute**
 - **Revenge**
 - **Counterattack**
-
+</center>
 
 ### **Druid**
+<center>
 ![Druid](https://github.com/wsmaxcy/ProcDoc/blob/main/img/Druid.png)
+
 - **Clearcasting**
 - **Nature’s Grace**
 - **Tiger's Fury**
@@ -95,46 +103,54 @@ ProcDoc supports a variety of procs and alerts when key abilities or buffs becom
 - **Natural Boon**
 - **Arcane Eclipse**
 - **Nature Eclipse**
-
+</center>
 
 ### **Rogue**
+<center>
 ![Rogue](https://github.com/wsmaxcy/ProcDoc/blob/main/img/Rogue.png)
 
 - **Remorseless**
 - **Riposte**
 - **Surprise Attack**
 - **Tricks of the Trade**
-
+</center>
 
 ### **Shaman**
+<center>
 ![Shaman](https://github.com/wsmaxcy/ProcDoc/blob/main/img/Shaman.png)
 
 - **Clearcasting**
 - **Nature's Swiftness**
 - **Stormstrike**
 - **Flurry**
-
+</center>
 
 ### **Priest**
+<center>
+
 ![Priest](https://github.com/wsmaxcy/ProcDoc/blob/main/img/Priest.png)
 - **Resurgence**
 - **Enlightened**
 - **Searing Light**
 - **Shadow Veil**
 - **Spell Blasting**
-
+</center>
 
 ### **Hunter**
+
+<center>
 ![Hunter](https://github.com/wsmaxcy/ProcDoc/blob/main/img/Hunter.png)
 - **Quick Shots**
 - **Lacerate**
 - **Baited Shot**
-
+</center>
 
 ### **Paladin**
+<center>
+
 ![Paladin](https://github.com/wsmaxcy/ProcDoc/blob/main/img/Paladin.png)
 - **Hammer of Wrath**
-
+</center>
 
 ### Additional Notes
 - The list includes both classic procs and custom procs unique to Turtle WoW.
