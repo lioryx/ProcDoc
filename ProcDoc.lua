@@ -484,6 +484,14 @@ end
 
 
 -- 5) OnUpdate pulse logic (handles alpha/scale pulsing and optional timer text)
+-- NOTE: Frequent use of the live GameTooltip for buff scanning will instantly hide
+-- any tooltip the player is viewing (items, NPCs, etc.). To avoid this we create
+-- our own hidden tooltip and never call GameTooltip:Hide() during scans.
+if not ProcDocScanTooltip then
+    ProcDocScanTooltip = CreateFrame("GameTooltip","ProcDocScanTooltip",UIParent,"GameTooltipTemplate")
+    ProcDocScanTooltip:Hide()
+end
+
 local function OnUpdateHandler()
     if maxAlpha <= minAlpha then maxAlpha = minAlpha + 0.01 end
     if maxScale <= minScale then maxScale = minScale + 0.01 end
@@ -498,10 +506,10 @@ local function OnUpdateHandler()
             for i = 0, 31 do
                 local tex = GetPlayerBuffTexture(i)
                 if tex then
-                    GameTooltip:SetOwner(UIParent, "ANCHOR_NONE")
-                    GameTooltip:SetPlayerBuff(i)
-                    local bName = (GameTooltipTextLeft1 and GameTooltipTextLeft1:GetText()) or ""
-                    GameTooltip:Hide()
+                    ProcDocScanTooltip:SetOwner(UIParent, "ANCHOR_NONE")
+                    ProcDocScanTooltip:SetPlayerBuff(i)
+                    local bName = (ProcDocScanTooltipTextLeft1 and ProcDocScanTooltipTextLeft1:GetText()) or ""
+                    ProcDocScanTooltip:Hide()
                     if bName ~= "" then
                         local tl = GetPlayerBuffTimeLeft(i)
                         if tl and tl > 0 then
@@ -660,17 +668,17 @@ local function CheckProcs()
     for i = 0, 31 do
         local buffTexture = GetPlayerBuffTexture(i)
         if buffTexture then
-            GameTooltip:SetOwner(UIParent, "ANCHOR_NONE")
-            GameTooltip:SetPlayerBuff(i)
-            local buffName = (GameTooltipTextLeft1 and GameTooltipTextLeft1:GetText()) or ""
+            ProcDocScanTooltip:SetOwner(UIParent, "ANCHOR_NONE")
+            ProcDocScanTooltip:SetPlayerBuff(i)
+            local buffName = (ProcDocScanTooltipTextLeft1 and ProcDocScanTooltipTextLeft1:GetText()) or ""
             local stackGuess = 0
             -- Vanilla 1.12: stacks often appear as right text or in second left line; attempt simple numeric parse
-            if GameTooltipTextRight1 and GameTooltipTextRight1:GetText() then
-                local rn = tonumber(GameTooltipTextRight1:GetText())
+            if ProcDocScanTooltipTextRight1 and ProcDocScanTooltipTextRight1:GetText() then
+                local rn = tonumber(ProcDocScanTooltipTextRight1:GetText())
                 if rn then stackGuess = rn end
             end
-            if stackGuess == 0 and GameTooltipTextLeft2 and GameTooltipTextLeft2:GetText() then
-                local ln2 = GameTooltipTextLeft2:GetText()
+            if stackGuess == 0 and ProcDocScanTooltipTextLeft2 and ProcDocScanTooltipTextLeft2:GetText() then
+                local ln2 = ProcDocScanTooltipTextLeft2:GetText()
                 local ln2n = tonumber(ln2)
                 if ln2n then stackGuess = ln2n end
             end
@@ -681,7 +689,7 @@ local function CheckProcs()
                     stackGuess = apiStacks
                 end
             end
-            GameTooltip:Hide()
+            ProcDocScanTooltip:Hide()
 
             for _, procInfo in ipairs(normalProcs) do
                 if ProcDocDB.procsEnabled[procInfo.buffName] ~= false then
@@ -735,10 +743,10 @@ local function CheckProcs()
             for i = 0, 31 do
                 local bTex = GetPlayerBuffTexture(i)
                 if bTex then
-                    GameTooltip:SetOwner(UIParent, "ANCHOR_NONE")
-                    GameTooltip:SetPlayerBuff(i)
-                    local bName = (GameTooltipTextLeft1 and GameTooltipTextLeft1:GetText()) or ""
-                    GameTooltip:Hide()
+                    ProcDocScanTooltip:SetOwner(UIParent, "ANCHOR_NONE")
+                    ProcDocScanTooltip:SetPlayerBuff(i)
+                    local bName = (ProcDocScanTooltipTextLeft1 and ProcDocScanTooltipTextLeft1:GetText()) or ""
+                    ProcDocScanTooltip:Hide()
                     if bName == procInfo.buffName then
                         local tl = GetPlayerBuffTimeLeft(i)
                         if tl and tl > 0 then
