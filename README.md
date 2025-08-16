@@ -65,9 +65,7 @@ You can experiment with these in the **`/procdoc`** panel. Changes are saved aut
 
   <h3><strong>Warlock</strong></h3>
   <img src="https://github.com/wsmaxcy/ProcDoc/blob/main/img/Warlock.png" alt="Warlock">
-  <ul>
     <li><strong>Shadow Trance (Nightfall)</strong></li>
-  </ul>
 
   <h3><strong>Mage</strong></h3>
   <img src="https://github.com/wsmaxcy/ProcDoc/blob/main/img/Mage.png" alt="Mage">
