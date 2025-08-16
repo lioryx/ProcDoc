@@ -277,7 +277,7 @@ local ACTION_PROCS = {
             buffName        = "Counterattack",
             texture         = "Interface\\Icons\\Ability_Warrior_Riposte",
             alertTexturePath= "Interface\\AddOns\\ProcDoc\\img\\WarriorCounterattack.tga",
-            alertStyle      = "LEFT", -- switched to single left-side style
+            alertStyle      = "LEFT",
             spellName       = "Counterattack"
         },
         {
@@ -305,6 +305,20 @@ local ACTION_PROCS = {
             alertStyle      = "TOP",
             spellName       = "Counterattack"
         },
+        {
+            buffName        = "Lacerate", 
+            texture         = "Interface\\Icons\\Spell_Lacerate_1c",
+            alertTexturePath= "Interface\\AddOns\\ProcDoc\\img\\HunterMongooseBite.tga",
+            alertStyle      = "SIDES2",
+            spellName       = "Lacerate"
+        },
+        {
+            buffName        = "Baited Shot",
+            texture         = "Interface\\Icons\\Inv_Misc_Food_66",
+            alertTexturePath= "Interface\\AddOns\\ProcDoc\\img\\HunterBaitedShot.tga",
+            alertStyle      = "TOP2",
+            spellName       = "Baited Shot"
+        }
     },
     ["PALADIN"] = {
         {
@@ -327,7 +341,9 @@ local ACTION_PROC_DEFAULT_DURATIONS = {
     ["Counterattack"]   = 5,  
     ["Revenge"]         = 5,  
     ["Surprise Attack"] = 5,  
-    ["Arcane Surge"]    = 4,  
+    ["Arcane Surge"]    = 4,
+    ["Lacerate"]        = 4,
+    ["Baited Shot"]     = 4,
 }
 
 -- Hot Streak (Turtle WoW custom, stack-based visual) constants (Vanilla 1.12 compatible logic)
@@ -580,6 +596,7 @@ end
 
 -- Holds which buff names we’ve already played a sound for.
 local knownBuffProcs = {}
+local buffStackCounts = {}
 
 local function CheckProcs()
     -- 1) Hide any old (buff-based) frames first
@@ -590,6 +607,7 @@ local function CheckProcs()
             if alertObj.timerTexts then
                 for _, fs in ipairs(alertObj.timerTexts) do if fs then fs:Hide() end end
             end
+            if alertObj.stackText then alertObj.stackText:Hide() end
             alertObj.hasTimer      = false
             alertObj.procStartTime = nil
             alertObj.procDuration  = nil
@@ -601,6 +619,7 @@ local function CheckProcs()
     local activeBuffNames = {}  -- just the names, for quick “did it fall off?” checks
 
     local hotStreakStacks = 0
+    buffStackCounts = {}
     for i = 0, 31 do
         local buffTexture = GetPlayerBuffTexture(i)
         if buffTexture then
@@ -618,6 +637,13 @@ local function CheckProcs()
                 local ln2n = tonumber(ln2)
                 if ln2n then stackGuess = ln2n end
             end
+            -- Prefer GetPlayerBuffApplications for Astral Boon / Natural Boon (reliable charges)
+            if GetPlayerBuffApplications and (buffName == "Astral Boon" or buffName == "Natural Boon") then
+                local apiStacks = GetPlayerBuffApplications(i)
+                if apiStacks and apiStacks > 0 then
+                    stackGuess = apiStacks
+                end
+            end
             GameTooltip:Hide()
 
             for _, procInfo in ipairs(normalProcs) do
@@ -625,6 +651,10 @@ local function CheckProcs()
                     if (buffTexture == procInfo.texture) and (buffName == procInfo.buffName) then
                         table.insert(activeBuffProcs, procInfo)
                         activeBuffNames[procInfo.buffName] = true
+                        -- Store stack count if any (>=1 valid)
+                        if stackGuess and stackGuess >= 1 then
+                            buffStackCounts[buffName] = stackGuess
+                        end
                     end
                 end
             end
@@ -632,7 +662,6 @@ local function CheckProcs()
             if buffName ~= "" then
                 local lowerName = string.lower(buffName)
                 if lowerName == string.lower(HOT_STREAK_BUFF_NAME) or string.find(lowerName, "hot streak") then
-                    -- Prefer API for stacks if available
                     local apiStacks
                     if GetPlayerBuffApplications then
                         apiStacks = GetPlayerBuffApplications(i)
@@ -692,18 +721,56 @@ local function CheckProcs()
                 if not alertObj.timerTexts[idx] then
                     local parentFrame = baseTex:GetParent() or ProcDoc or UIParent
                     local fs = parentFrame:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
-                    fs:SetPoint("CENTER", baseTex, "CENTER", 0, 0)
-                    fs:SetTextColor(1, 1, 0, 1) -- yellow
+                    local xShift = 0
+                    if procInfo.buffName == "Astral Boon" then
+                        xShift = -45 -- left side
+                    elseif procInfo.buffName == "Natural Boon" then
+                        xShift = 45  -- right side
+                    end
+                    fs:SetPoint("CENTER", baseTex, "CENTER", xShift, 0)
+                    fs:SetTextColor(1, 1, 0, 1)
                     if timerTextAlpha then fs:SetAlpha(timerTextAlpha) end
                     fs:SetText("")
                     alertObj.timerTexts[idx] = fs
+                else
+                    if procInfo.buffName == "Astral Boon" then
+                        local fs = alertObj.timerTexts[idx]; fs:ClearAllPoints(); fs:SetPoint("CENTER", alertObj.textures[idx], "CENTER", -45, 0)
+                    elseif procInfo.buffName == "Natural Boon" then
+                        local fs = alertObj.timerTexts[idx]; fs:ClearAllPoints(); fs:SetPoint("CENTER", alertObj.textures[idx], "CENTER", 45, 0)
+                    end
                 end
+            end
+            -- Stack displays (Astral Boon left, Natural Boon right; stacks above respective shifted timers)
+            if procInfo.buffName == "Astral Boon" or procInfo.buffName == "Natural Boon" then
+                local stacks = buffStackCounts[procInfo.buffName]
+                if stacks and stacks >= 1 then
+                    local anchorFS = alertObj.timerTexts[1]
+                    if anchorFS then
+                        if not alertObj.stackText then
+                            local parentFrame = anchorFS:GetParent() or ProcDoc or UIParent
+                            local sfs = parentFrame:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+                            sfs:SetTextColor(1,1,1,1)
+                            if timerTextAlpha then sfs:SetAlpha(timerTextAlpha) end
+                            alertObj.stackText = sfs
+                        end
+                        alertObj.stackText:ClearAllPoints()
+                        -- Center directly above the timer (no horizontal offset)
+                        alertObj.stackText:SetPoint("BOTTOM", anchorFS, "TOP", 0, 2)
+                        alertObj.stackText:SetText(stacks)
+                        alertObj.stackText:Show()
+                    end
+                else
+                    if alertObj.stackText then alertObj.stackText:Hide() end
+                end
+            elseif alertObj.stackText then
+                alertObj.stackText:Hide()
             end
         else
             -- Ensure timer texts hidden if no duration
             if alertObj.timerTexts then
                 for _, fs in ipairs(alertObj.timerTexts) do if fs then fs:Hide() end end
             end
+            if alertObj.stackText then alertObj.stackText:Hide() end
         end
 
         -- 4) If this is a newly gained buff, play the sound (if not muted).
