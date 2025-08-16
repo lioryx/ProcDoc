@@ -24,11 +24,13 @@
 
 1. **Open Up Turtle-WoW Launcher** and click on the  **`ADDONS`** tab at the top of the window.
 ![Click Addons](https://github.com/wsmaxcy/ProcDoc/blob/main/img/Install1.png)
-2.  **At the bottom of the window,** press `+ Add new addon`. A new screen will appear that says `Enter a URL to install the addon from.`
+2. **Scroll Down** to the **`AVAILABLE`** tab and find the **ProcDoc** addon. Click the Download button to the right. This will complete the installation of the addon and there is no need to move forward.
+![](https://github.com/wsmaxcy/ProcDoc/blob/main/img/Install4.png)
+3. **If ProcDoc is not in the `AVAILABLE` tab,** at the bottom of the window press `+ Add new addon`. A new screen will appear that says `Enter a URL to install the addon from.`
 ![Click Add](https://github.com/wsmaxcy/ProcDoc/blob/main/img/Install2.png)
-3. **In the text box,** enter in the web address `https://github.com/wsmaxcy/ProcDoc`. If done correctly, a github repository will appear and you will see a beautiful face appear in the window.
+4. **In the text box,** enter in the web address `https://github.com/wsmaxcy/ProcDoc`. If done correctly, a github repository will appear and you will see a beautiful face appear in the window.
 ![Add Repo](https://github.com/wsmaxcy/ProcDoc/blob/main/img/Install3.png)
-4. **Press Install** and you're good to go! Enjoy your proc animations!
+5. **Press Install** and you're good to go! Enjoy your proc animations!
 
 ---
 
