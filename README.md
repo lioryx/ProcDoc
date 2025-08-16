@@ -69,28 +69,23 @@ You can experiment with these in the **`/procdoc`** panel. Changes are saved aut
 
   <h3><strong>Mage</strong></h3>
   <img src="https://github.com/wsmaxcy/ProcDoc/blob/main/img/Mage.png" alt="Mage">
-  <ul>
     <li><strong>Clearcasting</strong></li>
     <li><strong>Netherwind Focus</strong></li>
     <li><strong>Temporal Convergence</strong></li>
     <li><strong>Flash Freeze</strong></li>
     <li><strong>Arcane Surge</strong></li>
     <li><strong>Arcane Rupture</strong></li>
-  </ul>
 
   <h3><strong>Warrior</strong></h3>
   <img src="https://github.com/wsmaxcy/ProcDoc/blob/main/img/Warrior.png" alt="Warrior">
-  <ul>
     <li><strong>Enrage</strong></li>
     <li><strong>Overpower</strong></li>
     <li><strong>Execute</strong></li>
     <li><strong>Revenge</strong></li>
     <li><strong>Counterattack</strong></li>
-  </ul>
 
   <h3><strong>Druid</strong></h3>
   <img src="https://github.com/wsmaxcy/ProcDoc/blob/main/img/Druid.png" alt="Druid">
-  <ul>
     <li><strong>Clearcasting</strong></li>
     <li><strong>Nature’s Grace</strong></li>
     <li><strong>Tiger's Fury</strong></li>
@@ -98,49 +93,38 @@ You can experiment with these in the **`/procdoc`** panel. Changes are saved aut
     <li><strong>Natural Boon</strong></li>
     <li><strong>Arcane Eclipse</strong></li>
     <li><strong>Nature Eclipse</strong></li>
-  </ul>
 
   <h3><strong>Rogue</strong></h3>
   <img src="https://github.com/wsmaxcy/ProcDoc/blob/main/img/Rogue.png" alt="Rogue">
-  <ul>
     <li><strong>Remorseless</strong></li>
     <li><strong>Riposte</strong></li>
     <li><strong>Surprise Attack</strong></li>
     <li><strong>Tricks of the Trade</strong></li>
-  </ul>
 
   <h3><strong>Shaman</strong></h3>
   <img src="https://github.com/wsmaxcy/ProcDoc/blob/main/img/Shaman.png" alt="Shaman">
-  <ul>
     <li><strong>Clearcasting</strong></li>
     <li><strong>Nature's Swiftness</strong></li>
     <li><strong>Stormstrike</strong></li>
     <li><strong>Flurry</strong></li>
-  </ul>
 
   <h3><strong>Priest</strong></h3>
   <img src="https://github.com/wsmaxcy/ProcDoc/blob/main/img/Priest.png" alt="Priest">
-  <ul>
     <li><strong>Resurgence</strong></li>
     <li><strong>Enlightened</strong></li>
     <li><strong>Searing Light</strong></li>
     <li><strong>Shadow Veil</strong></li>
     <li><strong>Spell Blasting</strong></li>
-  </ul>
 
   <h3><strong>Hunter</strong></h3>
   <img src="https://github.com/wsmaxcy/ProcDoc/blob/main/img/Hunter.png" alt="Hunter">
-  <ul>
     <li><strong>Quick Shots</strong></li>
     <li><strong>Lacerate</strong></li>
     <li><strong>Baited Shot</strong></li>
-  </ul>
 
   <h3><strong>Paladin</strong></h3>
   <img src="https://github.com/wsmaxcy/ProcDoc/blob/main/img/Paladin.png" alt="Paladin">
-  <ul>
     <li><strong>Hammer of Wrath</strong></li>
-  </ul>
 </div>
 <!-- END: Centered Supported Procs -->
 
