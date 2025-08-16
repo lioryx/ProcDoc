@@ -299,13 +299,6 @@ local ACTION_PROCS = {
     },
     ["HUNTER"] = {
         {
-            buffName        = "Counterattack", 
-            texture         = "Interface\\Icons\\Ability_Warrior_Challange",
-            alertTexturePath= "Interface\\AddOns\\ProcDoc\\img\\HunterCounterattack.tga",
-            alertStyle      = "TOP",
-            spellName       = "Counterattack"
-        },
-        {
             buffName        = "Lacerate", 
             texture         = "Interface\\Icons\\Spell_Lacerate_1c",
             alertTexturePath= "Interface\\AddOns\\ProcDoc\\img\\HunterMongooseBite.tga",
@@ -316,7 +309,7 @@ local ACTION_PROCS = {
             buffName        = "Baited Shot",
             texture         = "Interface\\Icons\\Inv_Misc_Food_66",
             alertTexturePath= "Interface\\AddOns\\ProcDoc\\img\\HunterBaitedShot.tga",
-            alertStyle      = "TOP2",
+            alertStyle      = "TOP",
             spellName       = "Baited Shot"
         }
     },
@@ -496,6 +489,34 @@ local function OnUpdateHandler()
     if maxScale <= minScale then maxScale = minScale + 0.01 end
 
     local now = GetTime()
+    -- Periodic capture of current buff remaining times so we can detect mid-duration refreshes
+    if not ProcDoc._lastBuffTimeScan then ProcDoc._lastBuffTimeScan = 0 end
+    if not ProcDoc.currentBuffTimes then ProcDoc.currentBuffTimes = {} end
+    if (now - ProcDoc._lastBuffTimeScan) > 0.30 then -- throttle ~3 times per second
+        local snapshot = {}
+        if GetPlayerBuffTimeLeft then
+            for i = 0, 31 do
+                local tex = GetPlayerBuffTexture(i)
+                if tex then
+                    GameTooltip:SetOwner(UIParent, "ANCHOR_NONE")
+                    GameTooltip:SetPlayerBuff(i)
+                    local bName = (GameTooltipTextLeft1 and GameTooltipTextLeft1:GetText()) or ""
+                    GameTooltip:Hide()
+                    if bName ~= "" then
+                        local tl = GetPlayerBuffTimeLeft(i)
+                        if tl and tl > 0 then
+                            -- keep the largest remaining (some servers may duplicate icons)
+                            if (not snapshot[bName]) or (tl > snapshot[bName]) then
+                                snapshot[bName] = tl
+                            end
+                        end
+                    end
+                end
+            end
+        end
+        ProcDoc.currentBuffTimes = snapshot
+        ProcDoc._lastBuffTimeScan = now
+    end
     for _, alertObj in ipairs(alertFrames) do
         if alertObj.isActive then
             -- Pulse update
@@ -525,6 +546,21 @@ local function OnUpdateHandler()
 
             -- Timer countdown text
             if alertObj.hasTimer and alertObj.procDuration and alertObj.procStartTime then
+                -- Refresh detection: if the buff was re-applied (remaining time jumped up), reset timer
+                if (not alertObj.isActionBased) and alertObj.buffName and ProcDoc.currentBuffTimes then
+                    local observedTL = ProcDoc.currentBuffTimes[alertObj.buffName]
+                    if observedTL and observedTL > 0 then
+                        local elapsedSoFar = now - alertObj.procStartTime
+                        local remainingPrev = alertObj.procDuration - elapsedSoFar
+                        if remainingPrev < 0 then remainingPrev = 0 end
+                        -- If the newly observed time left exceeds previous remaining by >0.5s treat as refresh
+                        if (observedTL - remainingPrev) > 0.5 then
+                            alertObj.procStartTime = now
+                            alertObj.procDuration  = observedTL
+                            alertObj.zeroShown     = false
+                        end
+                    end
+                end
                 local elapsed   = now - alertObj.procStartTime
                 local remaining = alertObj.procDuration - elapsed
                 local secs
@@ -611,6 +647,7 @@ local function CheckProcs()
             alertObj.hasTimer      = false
             alertObj.procStartTime = nil
             alertObj.procDuration  = nil
+            alertObj.buffName      = nil
         end
     end
 
@@ -677,13 +714,14 @@ local function CheckProcs()
     -- 3) Show frames for each active buff
     for _, procInfo in ipairs(activeBuffProcs) do
         local style   = procInfo.alertStyle or "SIDES"
-        local alertObj = AcquireAlertFrame(style, false)
+    local alertObj = AcquireAlertFrame(style, false)
         alertObj.isActive   = true
         alertObj.pulseAlpha = minAlpha
         alertObj.pulseDir   = alphaStep
         alertObj.hasTimer      = false
         alertObj.procStartTime = nil
         alertObj.procDuration  = nil
+    alertObj.buffName      = procInfo.buffName
 
         local path = procInfo.alertTexturePath or DEFAULT_ALERT_TEXTURE
         for _, tex in ipairs(alertObj.textures) do

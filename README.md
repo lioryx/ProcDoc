@@ -125,10 +125,8 @@ ProcDoc supports a variety of procs and alerts when key abilities or buffs becom
 ### **Hunter**
 ![Hunter](https://github.com/wsmaxcy/ProcDoc/blob/main/img/Hunter.png)
 - **Quick Shots**
-- **Counterattack**
-- **Mongoose Bite**
-- **Coming Soon - Lacerate**
-- **Coming Soon - Baited Shot**
+- **Lacerate**
+- **Baited Shot**
 
 
 ### **Paladin**
