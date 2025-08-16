@@ -60,97 +60,92 @@ You can experiment with these in the **`/procdoc`** panel. Changes are saved aut
 
 ## Supported Procs
 
-ProcDoc supports a variety of procs and alerts when key abilities or buffs become available for each class. Below is a list of currently supported procs:
+<div align="center">
+  <p><strong>ProcDoc</strong> supports a variety of procs and alerts when key abilities or buffs become available for each class. Below is a list of currently supported procs:</p>
 
-### **Warlock**
-<center>
-![Warlock](https://github.com/wsmaxcy/ProcDoc/blob/main/img/Warlock.png)
+  <h3><strong>Warlock</strong></h3>
+  <img src="https://github.com/wsmaxcy/ProcDoc/blob/main/img/Warlock.png" alt="Warlock">
+  <ul>
+    <li><strong>Shadow Trance (Nightfall)</strong></li>
+  </ul>
 
-- **Shadow Trance (Nightfall)**
-</center>
+  <h3><strong>Mage</strong></h3>
+  <img src="https://github.com/wsmaxcy/ProcDoc/blob/main/img/Mage.png" alt="Mage">
+  <ul>
+    <li><strong>Clearcasting</strong></li>
+    <li><strong>Netherwind Focus</strong></li>
+    <li><strong>Temporal Convergence</strong></li>
+    <li><strong>Flash Freeze</strong></li>
+    <li><strong>Arcane Surge</strong></li>
+    <li><strong>Arcane Rupture</strong></li>
+  </ul>
 
-### **Mage**
-<center>
-![Mage](https://github.com/wsmaxcy/ProcDoc/blob/main/img/Mage.png)
+  <h3><strong>Warrior</strong></h3>
+  <img src="https://github.com/wsmaxcy/ProcDoc/blob/main/img/Warrior.png" alt="Warrior">
+  <ul>
+    <li><strong>Enrage</strong></li>
+    <li><strong>Overpower</strong></li>
+    <li><strong>Execute</strong></li>
+    <li><strong>Revenge</strong></li>
+    <li><strong>Counterattack</strong></li>
+  </ul>
 
-- **Clearcasting**
-- **Netherwind Focus**
-- **Temporal Convergence**
-- **Flash Freeze**
-- **Arcane Surge**
-- **Arcane Rupture**
-</center>
+  <h3><strong>Druid</strong></h3>
+  <img src="https://github.com/wsmaxcy/ProcDoc/blob/main/img/Druid.png" alt="Druid">
+  <ul>
+    <li><strong>Clearcasting</strong></li>
+    <li><strong>Nature’s Grace</strong></li>
+    <li><strong>Tiger's Fury</strong></li>
+    <li><strong>Astral Boon</strong></li>
+    <li><strong>Natural Boon</strong></li>
+    <li><strong>Arcane Eclipse</strong></li>
+    <li><strong>Nature Eclipse</strong></li>
+  </ul>
 
-### **Warrior**
-<center>
-![Warrior](https://github.com/wsmaxcy/ProcDoc/blob/main/img/Warrior.png)
+  <h3><strong>Rogue</strong></h3>
+  <img src="https://github.com/wsmaxcy/ProcDoc/blob/main/img/Rogue.png" alt="Rogue">
+  <ul>
+    <li><strong>Remorseless</strong></li>
+    <li><strong>Riposte</strong></li>
+    <li><strong>Surprise Attack</strong></li>
+    <li><strong>Tricks of the Trade</strong></li>
+  </ul>
 
-- **Enrage**
-- **Overpower**
-- **Execute**
-- **Revenge**
-- **Counterattack**
-</center>
+  <h3><strong>Shaman</strong></h3>
+  <img src="https://github.com/wsmaxcy/ProcDoc/blob/main/img/Shaman.png" alt="Shaman">
+  <ul>
+    <li><strong>Clearcasting</strong></li>
+    <li><strong>Nature's Swiftness</strong></li>
+    <li><strong>Stormstrike</strong></li>
+    <li><strong>Flurry</strong></li>
+  </ul>
 
-### **Druid**
-<center>
-![Druid](https://github.com/wsmaxcy/ProcDoc/blob/main/img/Druid.png)
+  <h3><strong>Priest</strong></h3>
+  <img src="https://github.com/wsmaxcy/ProcDoc/blob/main/img/Priest.png" alt="Priest">
+  <ul>
+    <li><strong>Resurgence</strong></li>
+    <li><strong>Enlightened</strong></li>
+    <li><strong>Searing Light</strong></li>
+    <li><strong>Shadow Veil</strong></li>
+    <li><strong>Spell Blasting</strong></li>
+  </ul>
 
-- **Clearcasting**
-- **Nature’s Grace**
-- **Tiger's Fury**
-- **Astral Boon**
-- **Natural Boon**
-- **Arcane Eclipse**
-- **Nature Eclipse**
-</center>
+  <h3><strong>Hunter</strong></h3>
+  <img src="https://github.com/wsmaxcy/ProcDoc/blob/main/img/Hunter.png" alt="Hunter">
+  <ul>
+    <li><strong>Quick Shots</strong></li>
+    <li><strong>Lacerate</strong></li>
+    <li><strong>Baited Shot</strong></li>
+  </ul>
 
-### **Rogue**
-<center>
-![Rogue](https://github.com/wsmaxcy/ProcDoc/blob/main/img/Rogue.png)
+  <h3><strong>Paladin</strong></h3>
+  <img src="https://github.com/wsmaxcy/ProcDoc/blob/main/img/Paladin.png" alt="Paladin">
+  <ul>
+    <li><strong>Hammer of Wrath</strong></li>
+  </ul>
+</div>
+<!-- END: Centered Supported Procs -->
 
-- **Remorseless**
-- **Riposte**
-- **Surprise Attack**
-- **Tricks of the Trade**
-</center>
-
-### **Shaman**
-<center>
-![Shaman](https://github.com/wsmaxcy/ProcDoc/blob/main/img/Shaman.png)
-
-- **Clearcasting**
-- **Nature's Swiftness**
-- **Stormstrike**
-- **Flurry**
-</center>
-
-### **Priest**
-<center>
-
-![Priest](https://github.com/wsmaxcy/ProcDoc/blob/main/img/Priest.png)
-- **Resurgence**
-- **Enlightened**
-- **Searing Light**
-- **Shadow Veil**
-- **Spell Blasting**
-</center>
-
-### **Hunter**
-
-<center>
-![Hunter](https://github.com/wsmaxcy/ProcDoc/blob/main/img/Hunter.png)
-- **Quick Shots**
-- **Lacerate**
-- **Baited Shot**
-</center>
-
-### **Paladin**
-<center>
-
-![Paladin](https://github.com/wsmaxcy/ProcDoc/blob/main/img/Paladin.png)
-- **Hammer of Wrath**
-</center>
 
 ### Additional Notes
 - The list includes both classic procs and custom procs unique to Turtle WoW.
