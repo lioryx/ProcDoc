@@ -7,45 +7,63 @@ initFrame:RegisterEvent("VARIABLES_LOADED")
 
 initFrame:SetScript("OnEvent", function()
     if event == "VARIABLES_LOADED" then
-        if not ProcDocDB then
-            ProcDocDB = {}
-        end
-        if not ProcDocDB.globalVars then
-            ProcDocDB.globalVars = {}
-        end
-        if not ProcDocDB.procsEnabled then
-            ProcDocDB.procsEnabled = {}
-        end
-    
-        -- Add this line:
-        if ProcDocDB.globalVars.isMuted == nil then
-            ProcDocDB.globalVars.isMuted = false
-        end
-        if ProcDocDB.globalVars.soundVolume == nil then
-            ProcDocDB.globalVars.soundVolume = 1.0
-        end
-        if ProcDocDB.globalVars.disableTimers == nil then
-            ProcDocDB.globalVars.disableTimers = false
-        end
-        if not ProcDocDB.actionProcDurations then
-            ProcDocDB.actionProcDurations = {}
-        end
-        
-    
+        if not ProcDocDB then ProcDocDB = {} end
+        if not ProcDocDB.globalVars then ProcDocDB.globalVars = {} end
+        if not ProcDocDB.procsEnabled then ProcDocDB.procsEnabled = {} end
+        if not ProcDocDB.actionProcDurations then ProcDocDB.actionProcDurations = {} end
+
         local gv = ProcDocDB.globalVars
-        minAlpha   = gv.minAlpha   or 0.6
-        maxAlpha   = gv.maxAlpha   or 1.0
-        minScale   = gv.minScale   or 0.8
-        maxScale   = gv.maxScale   or 1.0
-        alphaStep  = gv.alphaStep  or 0.01
-        pulseSpeed = gv.pulseSpeed or 1.0
-        topOffset      = gv.topOffset  or 150
-        sideOffset     = gv.sideOffset or 150
-        timerTextAlpha = gv.timerTextAlpha or 0.85  -- semi-transparent timer text
-    
+        -- Only set defaults if not present
+        if gv.minAlpha == nil then gv.minAlpha = 0.8 end
+        if gv.maxAlpha == nil then gv.maxAlpha = 1.0 end
+        if gv.minScale == nil then gv.minScale = 0.9 end
+        if gv.maxScale == nil then gv.maxScale = 1.0 end  -- new default (old default was 1.25)
+        if gv.alphaStep == nil then gv.alphaStep = 0.01 end
+        if gv.pulseSpeed == nil then gv.pulseSpeed = 0.4 end
+        if gv.topOffset == nil then gv.topOffset = 70 end
+        if gv.sideOffset == nil then gv.sideOffset = 60 end
+        if gv.timerTextAlpha == nil then gv.timerTextAlpha = 0.85 end
+        if gv.isMuted == nil then gv.isMuted = false end
+        if gv.soundVolume == nil then gv.soundVolume = 1.0 end
+        if gv.disableTimers == nil then gv.disableTimers = false end
+
+        -- Migration: if user still has the old hard-coded maxScale 1.25 and never changed it, normalize to 1.0
+        if gv.maxScale == 1.25 then
+            gv.maxScale = 1.0
+        end
+
+        minAlpha      = gv.minAlpha
+        maxAlpha      = gv.maxAlpha
+        minScale      = gv.minScale
+        maxScale      = gv.maxScale
+        alphaStep     = gv.alphaStep
+        pulseSpeed    = gv.pulseSpeed
+        topOffset     = gv.topOffset
+        sideOffset    = gv.sideOffset
+        timerTextAlpha= gv.timerTextAlpha
+
         initFrame:UnregisterEvent("VARIABLES_LOADED")
+        DEFAULT_CHAT_FRAME:AddMessage("|cff00ff00ProcDoc|r SavedVariables loaded. minAlpha="..tostring(minAlpha).." maxAlpha="..tostring(maxAlpha).." minScale="..tostring(minScale).." maxScale="..tostring(maxScale).." topOffset="..tostring(topOffset).." sideOffset="..tostring(sideOffset))
     end
 end)
+
+-- Debug helper to print current DB values
+local function ProcDoc_DumpDB()
+    if not ProcDocDB or not ProcDocDB.globalVars then
+        DEFAULT_CHAT_FRAME:AddMessage("|cffff0000ProcDoc|r: DB not initialized yet.")
+        return
+    end
+    local gv = ProcDocDB.globalVars
+    DEFAULT_CHAT_FRAME:AddMessage("|cff00ff00ProcDoc DB Dump|r")
+    DEFAULT_CHAT_FRAME:AddMessage("  minAlpha="..tostring(gv.minAlpha)
+        .." maxAlpha="..tostring(gv.maxAlpha)
+        .." minScale="..tostring(gv.minScale)
+        .." maxScale="..tostring(gv.maxScale)
+        .." pulseSpeed="..tostring(gv.pulseSpeed))
+    DEFAULT_CHAT_FRAME:AddMessage("  topOffset="..tostring(gv.topOffset).." sideOffset="..tostring(gv.sideOffset)
+        .." isMuted="..tostring(gv.isMuted)
+        .." disableTimers="..tostring(gv.disableTimers))
+end
     
 -- 2) Main addon frame
 local addonName = "ProcDoc"
@@ -1204,6 +1222,18 @@ end
 local function ShowTestBuffAlert(procInfo)
     local style = procInfo.alertStyle or "SIDES"
 
+    -- Sync current globals from saved DB so test uses persisted values
+    if ProcDocDB and ProcDocDB.globalVars then
+        local gv = ProcDocDB.globalVars
+        if gv.minAlpha then minAlpha = gv.minAlpha end
+        if gv.maxAlpha then maxAlpha = gv.maxAlpha end
+        if gv.minScale then minScale = gv.minScale end
+        if gv.maxScale then maxScale = gv.maxScale end
+        if gv.pulseSpeed then pulseSpeed = gv.pulseSpeed end
+        if gv.topOffset then topOffset = gv.topOffset end
+        if gv.sideOffset then sideOffset = gv.sideOffset end
+    end
+
     -- If this buff's alert is already active, reuse it:
     local alertObj = testProcAlerts[procInfo.buffName]
     if alertObj and alertObj.isActive then
@@ -1211,7 +1241,7 @@ local function ShowTestBuffAlert(procInfo)
         alertObj.pulseDir   = alphaStep
     else
         -- Otherwise, acquire a new alert frame
-        alertObj = AcquireAlertFrame(style)
+    alertObj = AcquireAlertFrame(style, false)
         alertObj.isActive   = true
         alertObj.pulseAlpha = minAlpha
         alertObj.pulseDir   = alphaStep
@@ -1257,6 +1287,13 @@ local function ShowTestBuffAlert(procInfo)
         local offsetX = sideOffset + 50
         tex:SetPoint("CENTER", UIParent, "CENTER", offsetX, topOffset - 150)
     end
+
+    -- Apply final sizing to ensure any reused frame updates (important after reload)
+    for _, tex in ipairs(alertObj.textures) do
+        tex:SetAlpha(minAlpha)
+        tex:SetWidth(alertObj.baseWidth * minScale)
+        tex:SetHeight(alertObj.baseHeight * minScale)
+    end
 end
 
 
@@ -1283,6 +1320,27 @@ local function CreateProcDocOptionsFrame()
     end
     if not ProcDocDB.procsEnabled then
         ProcDocDB.procsEnabled = {}
+    end
+    if not ProcDocDB.globalVars then
+        ProcDocDB.globalVars = {}
+    end
+
+    -- Sync current tuning globals from saved DB BEFORE first-time slider creation
+    do
+        local gv = ProcDocDB.globalVars
+        if gv.minAlpha      ~= nil then minAlpha    = gv.minAlpha end
+        if gv.maxAlpha      ~= nil then maxAlpha    = gv.maxAlpha end
+        if gv.minScale      ~= nil then minScale    = gv.minScale end
+        if gv.maxScale      ~= nil then maxScale    = gv.maxScale end
+        if gv.pulseSpeed    ~= nil then pulseSpeed  = gv.pulseSpeed end
+        if gv.topOffset     ~= nil then topOffset   = gv.topOffset end
+        if gv.sideOffset    ~= nil then sideOffset  = gv.sideOffset end
+        -- Backwards compatibility: if old field names existed, migrate (example: maxSize->maxScale)
+        if gv.maxSize and not gv.maxScale then
+            maxScale = gv.maxSize
+            gv.maxScale = gv.maxSize
+            gv.maxSize = nil
+        end
     end
     
     if not ProcDocOptionsFrame then
@@ -1339,13 +1397,49 @@ local function CreateProcDocOptionsFrame()
         title:SetText("|cff00ff00[ProcDoc]|r Options")
         title:SetPoint("TOP", 0, -14)
 
-        -- Update Sliders Function
+        -- Update live active proc frames (non-test) with new sizing/alpha values
         local function UpdateLiveProcs()
             for _, alertObj in ipairs(alertFrames) do
                 if alertObj.isActive then
                     alertObj.pulseAlpha = minAlpha
                     alertObj.pulseDir = alphaStep
         
+                    for _, tex in ipairs(alertObj.textures) do
+                        tex:SetAlpha(minAlpha)
+                        tex:SetWidth(alertObj.baseWidth * minScale)
+                        tex:SetHeight(alertObj.baseHeight * minScale)
+                    end
+                end
+            end
+        end
+
+        -- Update any active test proc preview frames immediately as sliders move
+        local function UpdateTestAlertsPositions()
+            for _, alertObj in pairs(testProcAlerts) do
+                if alertObj.isActive then
+                    -- Re-anchor
+                    if alertObj.style == "TOP" or alertObj.style == "TOP2" then
+                        local tex = alertObj.textures[1]
+                        tex:ClearAllPoints()
+                        local offsetY = (alertObj.style == "TOP2") and (topOffset + 50) or topOffset
+                        tex:SetPoint("CENTER", UIParent, "CENTER", 0, offsetY)
+                    elseif alertObj.style == "SIDES" or alertObj.style == "SIDES2" then
+                        local left = alertObj.textures[1]
+                        local right = alertObj.textures[2]
+                        local offsetX = (alertObj.style == "SIDES2") and (sideOffset + 50) or sideOffset
+                        left:ClearAllPoints(); right:ClearAllPoints()
+                        left:SetPoint("CENTER", UIParent, "CENTER", -offsetX, topOffset - 150)
+                        right:SetPoint("CENTER", UIParent, "CENTER", offsetX, topOffset - 150)
+                    elseif alertObj.style == "LEFT" then
+                        local tex = alertObj.textures[1]
+                        tex:ClearAllPoints()
+                        tex:SetPoint("CENTER", UIParent, "CENTER", -(sideOffset + 50), topOffset - 150)
+                    elseif alertObj.style == "RIGHT" then
+                        local tex = alertObj.textures[1]
+                        tex:ClearAllPoints()
+                        tex:SetPoint("CENTER", UIParent, "CENTER", (sideOffset + 50), topOffset - 150)
+                    end
+                    -- Apply size/alpha baseline
                     for _, tex in ipairs(alertObj.textures) do
                         tex:SetAlpha(minAlpha)
                         tex:SetWidth(alertObj.baseWidth * minScale)
@@ -1366,7 +1460,7 @@ local function CreateProcDocOptionsFrame()
         minTransSlider:SetWidth(300)
         minTransSlider:SetMinMaxValues(0, 1)
         minTransSlider:SetValueStep(0.05)
-        minTransSlider:SetValue(minAlpha)
+    minTransSlider:SetValue(minAlpha)
 
         local low1  = getglobal(minTransSlider:GetName().."Low")
         local high1 = getglobal(minTransSlider:GetName().."High")
@@ -1400,7 +1494,7 @@ local function CreateProcDocOptionsFrame()
                 localText:SetText(string.format("%.2f", value))
             end
 
-            UpdateLiveProcs()
+            UpdateLiveProcs(); UpdateTestAlertsPositions()
         end)
 
     -- Max transparency slider
@@ -1413,7 +1507,7 @@ local function CreateProcDocOptionsFrame()
         maxTransSlider:SetWidth(300)
         maxTransSlider:SetMinMaxValues(0, 1)
         maxTransSlider:SetValueStep(0.05)
-        maxTransSlider:SetValue(maxAlpha)
+    maxTransSlider:SetValue(maxAlpha)
 
         local low2  = getglobal(maxTransSlider:GetName().."Low")
         local high2 = getglobal(maxTransSlider:GetName().."High")
@@ -1445,7 +1539,7 @@ local function CreateProcDocOptionsFrame()
                 localText:SetText(string.format("%.2f", value))
             end
 
-            UpdateLiveProcs()
+            UpdateLiveProcs(); UpdateTestAlertsPositions()
         end)
 
     -- Min size slider
@@ -1458,7 +1552,7 @@ local function CreateProcDocOptionsFrame()
         minSizeSlider:SetWidth(300)
         minSizeSlider:SetMinMaxValues(0.5, 2)
         minSizeSlider:SetValueStep(0.05)
-        minSizeSlider:SetValue(minScale)
+    minSizeSlider:SetValue(minScale)
 
         local low3  = getglobal(minSizeSlider:GetName().."Low")
         local high3 = getglobal(minSizeSlider:GetName().."High")
@@ -1490,7 +1584,7 @@ local function CreateProcDocOptionsFrame()
                 localText:SetText(string.format("%.2f", value))
             end
 
-            UpdateLiveProcs()
+            UpdateLiveProcs(); UpdateTestAlertsPositions()
         end)
 
     -- Max size slider
@@ -1503,7 +1597,7 @@ local function CreateProcDocOptionsFrame()
         maxSizeSlider:SetWidth(300)
         maxSizeSlider:SetMinMaxValues(0.5, 2)
         maxSizeSlider:SetValueStep(0.05)
-        maxSizeSlider:SetValue(maxScale)
+    maxSizeSlider:SetValue(maxScale)
 
         local low4  = getglobal(maxSizeSlider:GetName().."Low")
         local high4 = getglobal(maxSizeSlider:GetName().."High")
@@ -1535,7 +1629,7 @@ local function CreateProcDocOptionsFrame()
                 localText:SetText(string.format("%.2f", value))
             end
 
-            UpdateLiveProcs()
+            UpdateLiveProcs(); UpdateTestAlertsPositions()
         end)
 
     -- Pulse speed slider
@@ -1549,7 +1643,7 @@ local function CreateProcDocOptionsFrame()
         pulseSpeedSlider:SetWidth(300)
         pulseSpeedSlider:SetMinMaxValues(0.1, 5.0)
         pulseSpeedSlider:SetValueStep(0.1)
-        pulseSpeedSlider:SetValue(pulseSpeed)
+    pulseSpeedSlider:SetValue(pulseSpeed)
 
         local lowSpeed  = getglobal(pulseSpeedSlider:GetName().."Low")
         local highSpeed = getglobal(pulseSpeedSlider:GetName().."High")
@@ -1574,7 +1668,7 @@ local function CreateProcDocOptionsFrame()
             if labelObj then
                 labelObj:SetText(string.format("%.2f", value))
             end
-        end)
+    end)
 
         local function ReanchorAllLiveProcs()
             for _, alertObj in ipairs(alertFrames) do
@@ -1620,7 +1714,7 @@ local function CreateProcDocOptionsFrame()
         topOffsetSlider:SetWidth(300)
         topOffsetSlider:SetMinMaxValues(0, 300)    -- e.g. range 0 -> 300
         topOffsetSlider:SetValueStep(10)
-        topOffsetSlider:SetValue(topOffset)        -- current global
+    topOffsetSlider:SetValue(topOffset)        -- current global
 
         local lowT  = getglobal(topOffsetSlider:GetName().."Low")
         local highT = getglobal(topOffsetSlider:GetName().."High")
@@ -1642,7 +1736,7 @@ local function CreateProcDocOptionsFrame()
                 ProcDocDB.globalVars.topOffset = topOffset
             end
 
-            ReanchorAllLiveProcs()
+            ReanchorAllLiveProcs(); UpdateTestAlertsPositions()
         end)
 
     -- Side offset slider
@@ -1655,7 +1749,7 @@ local function CreateProcDocOptionsFrame()
         sideOffsetSlider:SetWidth(300)
         sideOffsetSlider:SetMinMaxValues(0, 300)    -- e.g. range 0 -> 300
         sideOffsetSlider:SetValueStep(10)
-        sideOffsetSlider:SetValue(sideOffset)
+    sideOffsetSlider:SetValue(sideOffset)
 
         local lowS  = getglobal(sideOffsetSlider:GetName().."Low")
         local highS = getglobal(sideOffsetSlider:GetName().."High")
@@ -1678,7 +1772,7 @@ local function CreateProcDocOptionsFrame()
             end
 
 
-            ReanchorAllLiveProcs()
+            ReanchorAllLiveProcs(); UpdateTestAlertsPositions()
         end)
 
     -- Mute checkbox
@@ -1885,9 +1979,19 @@ end
 -- 14) Slash command
 SLASH_PROCDOC1 = "/procdoc"
 SlashCmdList["PROCDOC"] = function(msg)
-    local cmd = string.lower(msg or "")
-
+    local cmd = string.lower(strtrim(msg or ""))
+    if cmd == "dump" then
+        ProcDoc_DumpDB()
+        return
+    elseif cmd == "reset" then
+        if ProcDocDB and ProcDocDB.globalVars then
+            local gv = ProcDocDB.globalVars
+            gv.minAlpha = 0.8; gv.maxAlpha = 1.0; gv.minScale = 0.9; gv.maxScale = 1.0
+            gv.pulseSpeed = 0.4; gv.topOffset = 70; gv.sideOffset = 60
+            DEFAULT_CHAT_FRAME:AddMessage("|cff00ff00ProcDoc|r settings reset to defaults. /reload to apply fully.")
+        end
+        return
+    end
     CreateProcDocOptionsFrame()
-    DEFAULT_CHAT_FRAME:AddMessage("|cff00ffffProcDoc|r Options opened. ")
-    
+    DEFAULT_CHAT_FRAME:AddMessage("|cff00ffffProcDoc|r Options opened")
 end
