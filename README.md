@@ -23,7 +23,7 @@
 ## Installation
 
 1. **Open Up Turtle-WoW Launcher** and click on the  **`ADDONS`** tab at the top of the window.
-![Click Addons](https://github.com/wsmaxcy/ProcDoc/blob/main/img/Install1.png)
+![Click Addons](./img/Install1.png)
 2. **Scroll Down** to the **`AVAILABLE`** tab and find the **ProcDoc** addon. Click the Download button to the right. This will complete the installation of the addon and there is no need to move forward.
 ![](https://github.com/wsmaxcy/ProcDoc/blob/main/img/Install4.png)
 3. **If ProcDoc is not in the `AVAILABLE` tab,** at the bottom of the window press `+ Add new addon`. A new screen will appear that says `Enter a URL to install the addon from.`
