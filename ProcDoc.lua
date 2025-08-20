@@ -1980,18 +1980,6 @@ end
 SLASH_PROCDOC1 = "/procdoc"
 SlashCmdList["PROCDOC"] = function(msg)
     local cmd = string.lower(strtrim(msg or ""))
-    if cmd == "dump" then
-        ProcDoc_DumpDB()
-        return
-    elseif cmd == "reset" then
-        if ProcDocDB and ProcDocDB.globalVars then
-            local gv = ProcDocDB.globalVars
-            gv.minAlpha = 0.8; gv.maxAlpha = 1.0; gv.minScale = 0.9; gv.maxScale = 1.0
-            gv.pulseSpeed = 0.4; gv.topOffset = 70; gv.sideOffset = 60
-            DEFAULT_CHAT_FRAME:AddMessage("|cff00ff00ProcDoc|r settings reset to defaults. /reload to apply fully.")
-        end
-        return
-    end
     CreateProcDocOptionsFrame()
     DEFAULT_CHAT_FRAME:AddMessage("|cff00ffffProcDoc|r Options opened")
 end
