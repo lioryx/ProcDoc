@@ -25,11 +25,11 @@
 1. **Open Up Turtle-WoW Launcher** and click on the  **`ADDONS`** tab at the top of the window.
 ![Click Addons](./img/Install1.png)
 2. **Scroll Down** to the **`AVAILABLE`** tab and find the **ProcDoc** addon. Click the Download button to the right. This will complete the installation of the addon and there is no need to move forward.
-![](https://github.com/wsmaxcy/ProcDoc/blob/main/img/Install4.png)
+![Launcher](./img/Install4.png)
 3. **If ProcDoc is not in the `AVAILABLE` tab,** at the bottom of the window press `+ Add new addon`. A new screen will appear that says `Enter a URL to install the addon from.`
-![Click Add](https://github.com/wsmaxcy/ProcDoc/blob/main/img/Install2.png)
+![Click Add](./img/Install2.png)
 4. **In the text box,** enter in the web address `https://github.com/wsmaxcy/ProcDoc`. If done correctly, a github repository will appear and you will see a beautiful face appear in the window.
-![Add Repo](https://github.com/wsmaxcy/ProcDoc/blob/main/img/Install3.png)
+![Add Repo](./img/Install3.png)
 5. **Press Install** and you're good to go! Enjoy your proc animations!
 
 ---
@@ -54,7 +54,7 @@
 - **Sound Alerts**: Comes with a sound alert that will trigger when any proc is activated. Can be muted in the menu. This is tied to the `Master` volume, so if you would like to change the volume of the alert, use that slider.
 You can experiment with these in the **`/procdoc`** panel. Changes are saved automatically.
 
-![Configuration](https://github.com/wsmaxcy/ProcDoc/blob/main/img/Config.png)
+![Configuration](./img/Config.png)
 
 ---
 
@@ -64,11 +64,11 @@ You can experiment with these in the **`/procdoc`** panel. Changes are saved aut
   <p><strong>ProcDoc</strong> supports a variety of procs and alerts when key abilities or buffs become available for each class. Below is a list of currently supported procs:</p>
 
   <h3><strong>Warlock</strong></h3>
-  <img src="https://github.com/wsmaxcy/ProcDoc/blob/main/img/Warlock.png" alt="Warlock">
+  <img src="./img/Warlock.png" alt="Warlock">
     <li><strong>Shadow Trance (Nightfall)</strong></li>
 
   <h3><strong>Mage</strong></h3>
-  <img src="https://github.com/wsmaxcy/ProcDoc/blob/main/img/Mage.png" alt="Mage">
+  <img src="./img/Mage.png" alt="Mage">
     <li><strong>Clearcasting</strong></li>
     <li><strong>Netherwind Focus</strong></li>
     <li><strong>Temporal Convergence</strong></li>
@@ -77,7 +77,7 @@ You can experiment with these in the **`/procdoc`** panel. Changes are saved aut
     <li><strong>Arcane Rupture</strong></li>
 
   <h3><strong>Warrior</strong></h3>
-  <img src="https://github.com/wsmaxcy/ProcDoc/blob/main/img/Warrior.png" alt="Warrior">
+  <img src="./img/Warrior.png" alt="Warrior">
     <li><strong>Enrage</strong></li>
     <li><strong>Overpower</strong></li>
     <li><strong>Execute</strong></li>
@@ -85,7 +85,7 @@ You can experiment with these in the **`/procdoc`** panel. Changes are saved aut
     <li><strong>Counterattack</strong></li>
 
   <h3><strong>Druid</strong></h3>
-  <img src="https://github.com/wsmaxcy/ProcDoc/blob/main/img/Druid.png" alt="Druid">
+  <img src="./img/Druid.png" alt="Druid">
     <li><strong>Clearcasting</strong></li>
     <li><strong>Nature’s Grace</strong></li>
     <li><strong>Tiger's Fury</strong></li>
@@ -95,21 +95,21 @@ You can experiment with these in the **`/procdoc`** panel. Changes are saved aut
     <li><strong>Nature Eclipse</strong></li>
 
   <h3><strong>Rogue</strong></h3>
-  <img src="https://github.com/wsmaxcy/ProcDoc/blob/main/img/Rogue.png" alt="Rogue">
+  <img src="./img/Rogue.png" alt="Rogue">
     <li><strong>Remorseless</strong></li>
     <li><strong>Riposte</strong></li>
     <li><strong>Surprise Attack</strong></li>
     <li><strong>Tricks of the Trade</strong></li>
 
   <h3><strong>Shaman</strong></h3>
-  <img src="https://github.com/wsmaxcy/ProcDoc/blob/main/img/Shaman.png" alt="Shaman">
+  <img src="./img/Shaman.png" alt="Shaman">
     <li><strong>Clearcasting</strong></li>
     <li><strong>Nature's Swiftness</strong></li>
     <li><strong>Stormstrike</strong></li>
     <li><strong>Flurry</strong></li>
 
   <h3><strong>Priest</strong></h3>
-  <img src="https://github.com/wsmaxcy/ProcDoc/blob/main/img/Priest.png" alt="Priest">
+  <img src="./img/Priest.png" alt="Priest">
     <li><strong>Resurgence</strong></li>
     <li><strong>Enlightened</strong></li>
     <li><strong>Searing Light</strong></li>
@@ -117,13 +117,13 @@ You can experiment with these in the **`/procdoc`** panel. Changes are saved aut
     <li><strong>Spell Blasting</strong></li>
 
   <h3><strong>Hunter</strong></h3>
-  <img src="https://github.com/wsmaxcy/ProcDoc/blob/main/img/Hunter.png" alt="Hunter">
+  <img src="./img/Hunter.png" alt="Hunter">
     <li><strong>Quick Shots</strong></li>
     <li><strong>Lacerate</strong></li>
     <li><strong>Baited Shot</strong></li>
 
   <h3><strong>Paladin</strong></h3>
-  <img src="https://github.com/wsmaxcy/ProcDoc/blob/main/img/Paladin.png" alt="Paladin">
+  <img src="./img/Paladin.png" alt="Paladin">
     <li><strong>Hammer of Wrath</strong></li>
 </div>
 <!-- END: Centered Supported Procs -->
