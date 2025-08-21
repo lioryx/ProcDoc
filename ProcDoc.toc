@@ -5,4 +5,5 @@
 ## Version: 2.5.8
 ## SavedVariables: ProcDocDB
 
+Localization.lua
 ProcDoc.lua
