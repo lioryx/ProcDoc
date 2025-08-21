@@ -1979,7 +1979,6 @@ end
 -- 14) Slash command
 SLASH_PROCDOC1 = "/procdoc"
 SlashCmdList["PROCDOC"] = function(msg)
-    local cmd = string.lower(strtrim(msg or ""))
     CreateProcDocOptionsFrame()
     DEFAULT_CHAT_FRAME:AddMessage("|cff00ffffProcDoc|r Options opened")
 end
