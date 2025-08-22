@@ -22,10 +22,10 @@ ProcDocLocalization.strings = {
 	-- Druid
 	["Nature's Grace"]      = { enUS = "Nature's Grace",      zhCN = "自然之赐" },
 	["Tiger's Fury"]        = { enUS = "Tiger's Fury",        zhCN = "猛虎之怒" },
-	["Astral Boon"]         = { enUS = "Astral Boon",         zhCN = "奥术易伤" },
-	["Natural Boon"]        = { enUS = "Natural Boon",        zhCN = "自然易伤" },
-	["Arcane Eclipse"]      = { enUS = "Arcane Eclipse",      zhCN = "奥术月蚀" },
-	["Nature Eclipse"]      = { enUS = "Nature Eclipse",      zhCN = "自然月蚀" },
+	["Astral Boon"]         = { enUS = "Astral Boon",         zhCN = "万物平衡" },
+	["Natural Boon"]        = { enUS = "Natural Boon",        zhCN = "自然恩赐" },
+	["Arcane Eclipse"]      = { enUS = "Arcane Eclipse",      zhCN = "月蚀" },
+	["Nature Eclipse"]      = { enUS = "Nature Eclipse",      zhCN = "日蚀" },
 
 	-- Shaman
 	["Nature's Swiftness"]  = { enUS = "Nature's Swiftness",  zhCN = "自然迅捷" },
@@ -52,7 +52,7 @@ ProcDocLocalization.strings = {
 	["Spell Blasting"]      = { enUS = "Spell Blasting",      zhCN = "法术冲击" },
 
 	-- Paladin
-	["Daybreak"]            = { enUS = "Daybreak",            zhCN = "破晓" },
+	["Daybreak"]            = { enUS = "Daybreak",            zhCN = "晨辉" },
 	["Hammer of Wrath"]     = { enUS = "Hammer of Wrath",     zhCN = "愤怒之锤" },
 
 	-- Rogue
