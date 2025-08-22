@@ -14,16 +14,16 @@ ProcDocLocalization.strings = {
 	-- Mage
 	["Clearcasting"]        = { enUS = "Clearcasting",        zhCN = "节能施法" },
 	["Netherwind Focus"]    = { enUS = "Netherwind Focus",    zhCN = "灵风专注" },
-	["Temporal Convergence"] = { enUS = "Temporal Convergence", zhCN = "时空汇聚" },
-	["Flash Freeze"]        = { enUS = "Flash Freeze",        zhCN = "急速冷却" },
+	["Temporal Convergence"] = { enUS = "Temporal Convergence", zhCN = "时间融合" },
+	["Flash Freeze"]        = { enUS = "Flash Freeze",        zhCN = "冰霜速冻" },
 	["Arcane Rupture"]      = { enUS = "Arcane Rupture",      zhCN = "奥术溃烈" },
-	["Hot Streak"]          = { enUS = "Hot Streak",          zhCN = "炽热连击" },
+	["Hot Streak"]          = { enUS = "Hot Streak",          zhCN = "法术连击" },
 
 	-- Druid
 	["Nature's Grace"]      = { enUS = "Nature's Grace",      zhCN = "自然之赐" },
 	["Tiger's Fury"]        = { enUS = "Tiger's Fury",        zhCN = "猛虎之怒" },
-	["Astral Boon"]         = { enUS = "Astral Boon",         zhCN = "星界恩泽" },
-	["Natural Boon"]        = { enUS = "Natural Boon",        zhCN = "自然恩泽" },
+	["Astral Boon"]         = { enUS = "Astral Boon",         zhCN = "奥术易伤" },
+	["Natural Boon"]        = { enUS = "Natural Boon",        zhCN = "自然易伤" },
 	["Arcane Eclipse"]      = { enUS = "Arcane Eclipse",      zhCN = "奥术月蚀" },
 	["Nature Eclipse"]      = { enUS = "Nature Eclipse",      zhCN = "自然月蚀" },
 
@@ -34,7 +34,7 @@ ProcDocLocalization.strings = {
 
 	-- Hunter
 	["Quick Shots"]         = { enUS = "Quick Shots",         zhCN = "快速射击" },
-	["Lacerate"]            = { enUS = "Lacerate",            zhCN = "割裂" },
+	["Lacerate"]            = { enUS = "Lacerate",            zhCN = "割伤" },
 	["Baited Shot"]         = { enUS = "Baited Shot",         zhCN = "诱饵射击" },
 
 	-- Warrior
@@ -46,7 +46,7 @@ ProcDocLocalization.strings = {
 
 	-- Priest
 	["Resurgence"]          = { enUS = "Resurgence",          zhCN = "复苏" },
-	["Enlightened"]         = { enUS = "Enlightened",         zhCN = "启迪" },
+	["Enlightened"]         = { enUS = "Enlightened",         zhCN = "启发" },
 	["Searing Light"]       = { enUS = "Searing Light",       zhCN = "灼热之光" },
 	["Shadow Veil"]         = { enUS = "Shadow Veil",         zhCN = "暗影帷幕" },
 	["Spell Blasting"]      = { enUS = "Spell Blasting",      zhCN = "法术冲击" },
